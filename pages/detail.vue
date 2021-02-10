@@ -8,7 +8,7 @@
       suscipit veritatis vitae voluptates? Autem culpa, labore libero magni natus odio quia tempore voluptatum?
     </p>
 
-    <v-card>
+    <v-card >
       <v-card-title>
         Git Repositories
       </v-card-title>
@@ -25,60 +25,60 @@
             outlined
           >
             <v-icon left>
-              mdi-server-plus
+              mdi-git
             </v-icon>
             <a href="/https://github.com/zipzoft/mepo">https://github.com/zipzoft/mepo</a>
           </v-chip>
           <template>
-            <v-menu
-              v-model="menu"
-              bottom
-              right
-              transition="scale-transition"
-              origin="top left"
-            >
-              <template v-slot:activator="{ on }">
-                <v-chip
-                  pill
-                  v-on="on"
-                  color="primary"
-                >
-                  <v-avatar left>
-                    <v-icon>mdi-account-circle</v-icon>
-                  </v-avatar>
-                  Firth Maneesuksri
-                </v-chip>
-              </template>
-              <v-card width="280">
-                <v-list>
-                  <v-list-item>
-                    <v-list-item-avatar>
-                      <v-img src="https://cdn.vuetifyjs.com/images/john.png"></v-img>
-                    </v-list-item-avatar>
-                    <v-list-item-content>
-                      <v-list-item-title>John Leider</v-list-item-title>
-                      <v-list-item-subtitle>john@vuetifyjs.com</v-list-item-subtitle>
-                    </v-list-item-content>
-                    <v-list-item-action>
-                      <v-btn
-                        icon
-                        @click="menu = false"
-                      >
-                        <v-icon>mdi-close-circle</v-icon>
-                      </v-btn>
-                    </v-list-item-action>
-                  </v-list-item>
-                </v-list>
-                <v-list>
-                  <v-list-item @click="() => {}">
-                    <v-list-item-action>
-                      <v-icon>mdi-briefcase</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-subtitle>john@gmail.com</v-list-item-subtitle>
-                  </v-list-item>
-                </v-list>
-              </v-card>
-            </v-menu>
+              <v-menu
+                v-model="menu"
+                bottom
+                right
+                transition="scale-transition"
+                origin="top left"
+              >
+                <template v-slot:activator="{ on }">
+                  <v-chip
+                    pill
+                    v-on="on"
+                    color="primary"
+                  >
+                    <v-avatar left>
+                      <v-icon>mdi-account-circle</v-icon>
+                    </v-avatar>
+                    Firth Maneesuksri
+                  </v-chip>
+                </template>
+                <v-card width="280">
+                  <v-list>
+                    <v-list-item>
+                      <v-list-item-avatar>
+                        <v-img src="https://cdn.vuetifyjs.com/images/john.png"></v-img>
+                      </v-list-item-avatar>
+                      <v-list-item-content>
+                        <v-list-item-title>John Leider</v-list-item-title>
+                        <v-list-item-subtitle>john@vuetifyjs.com</v-list-item-subtitle>
+                      </v-list-item-content>
+                      <v-list-item-action>
+                        <v-btn
+                          icon
+                          @click="menu = false"
+                        >
+                          <v-icon>mdi-close-circle</v-icon>
+                        </v-btn>
+                      </v-list-item-action>
+                    </v-list-item>
+                  </v-list>
+                  <v-list>
+                    <v-list-item @click="() => {}">
+                      <v-list-item-action>
+                        <v-icon>mdi-briefcase</v-icon>
+                      </v-list-item-action>
+                      <v-list-item-subtitle>john@gmail.com</v-list-item-subtitle>
+                    </v-list-item>
+                  </v-list>
+                </v-card>
+              </v-menu>
           </template>
           <template>
             <v-menu
@@ -95,7 +95,8 @@
                   color="primary"
                 >
                   <v-avatar left>
-                    <v-icon>mdi-account-circle</v-icon>
+                    <v-icon>
+                      mdi-account-circle</v-icon>
                   </v-avatar>
                   Elmo Berg
                 </v-chip>
@@ -170,16 +171,16 @@
             </v-icon>
             call-center-chat-add-credit-picture
           </v-chip>
-          <v-chip
-            class=""
-            color="#1A237E"
-            outlined
-          >
-            <v-icon>
-              mdi-dots-horizontal
-            </v-icon>
+            <v-chip
+              class=""
+              color="#1A237E"
+              outlined
+            >
+              <v-icon>
+                mdi-dots-horizontal
+              </v-icon>
 
-          </v-chip>
+            </v-chip>
 
 
         </v-col>
@@ -187,44 +188,57 @@
       </v-row>
     </v-card>
     <v-card style="margin-top: 30px">
+      <v-row>
+        <v-col cols="6">
+          <v-card-title>
+            Environment
+          </v-card-title>
+        </v-col>
+        <v-col cols="6" >
+          <v-card-title >
+            <v-btn
+              class="ma-2"
+              color="purple"
+              dark
+            >
+              <v-icon dark>
+                mdi-wrench
+              </v-icon>
+            </v-btn>
+          </v-card-title>
+        </v-col>
+      </v-row>
+
       <v-expansion-panels class="mb-6">
         <v-expansion-panel
+          v-for="(items ,i) in items"
+          :key="i"
+
         >
 
           <v-expansion-panel-header expand-icon="mdi-menu-down">
-            <v-card-title>
-              Environment
-            </v-card-title>
+            <h3>{{items.name}}</h3>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <h3 style="margin-left: 15px">Production</h3>
-            <v-row style="margin-left: 5px">
+            <v-row>
               <v-col cols="6">
-                Key name : ABC ABC ABC
+                Key : {{items.key}}
               </v-col>
               <v-col cols="6">
-                Value : ABC ABC ABC
-              </v-col>
-            </v-row>
-          </v-expansion-panel-content>
-          <v-divider></v-divider>
-          <v-expansion-panel-content>
-            <h3 style="margin-left: 15px">Staging</h3>
-            <v-row style="margin-left: 5px">
-              <v-col cols="6">
-                Key name : EFG EFG EFG
+                Value : {{items.value}}
               </v-col>
               <v-col cols="6">
-                Value :  EFG EFG EFG
+                Key : AB ABC ABCD
+              </v-col>
+              <v-col cols="6">
+                Value : 123456789
               </v-col>
             </v-row>
           </v-expansion-panel-content>
-
-
         </v-expansion-panel>
       </v-expansion-panels>
-
     </v-card>
+
 
 
   </v-container>
@@ -234,6 +248,17 @@
 export default {
   data: () => ({
     menu: false,
+    items:[{
+      name: "Production",
+      key:"AB BC ABCD",
+      value:"123456789"
+    },
+      {
+        name: "Staging",
+        key:"KITTY KITTYKAT",
+        value:"1212312121"
+      }],
+
     messages: [
       {
         avatar: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460',

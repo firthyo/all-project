@@ -78,6 +78,163 @@
             <template v-slot:default="props">
               <v-row>
                 <v-col
+                  style="justify-items: center; display: flex; justify-content: center"
+                  cols="12"
+                  sm="6"
+                  md="4"
+                  lg="3">
+                  <v-card-title class="subheading font-weight-bold">
+                    <template>
+                      <v-row justify="center">
+                        <!--*********************-->
+                        <!-- ADD-->
+                        <!--*********************-->
+                        <v-btn
+                          color="blue-grey"
+                          class="white--text"
+                          @click.stop="dialogAdd = true"
+                        >
+                          เพิ่ม
+                        </v-btn>
+                        <v-dialog
+                          v-model="dialogAdd"
+                          max-width="600"
+                        >
+                          <v-card>
+                            <v-card-title>
+                              <span class="headline">New Project</span>
+                            </v-card-title>
+                            <v-card-text>
+                              <v-container>
+                                <v-row>
+                                  <v-col
+                                    cols="12"
+                                  >
+                                    <v-text-field
+                                      label="Project Name"
+                                      required
+                                    ></v-text-field>
+                                  </v-col>
+                                  <v-col cols="12">
+                                    <v-text-field
+                                      label="Git Repository Name"
+                                      prepend-icon="mdi-git"
+                                      required
+                                    ></v-text-field>
+                                  </v-col>
+                                  <v-col cols="12">
+                                    <v-text-field
+                                      label="Password*"
+                                      type="password"
+                                      required
+                                    ></v-text-field>
+                                  </v-col>
+                                  <v-col
+                                    cols="12"
+                                    sm="6"
+                                  >
+                                    <v-select
+                                      :items="['0-17', '18-29', '30-54', '54+']"
+                                      label="Age*"
+                                      required
+                                    ></v-select>
+                                  </v-col>
+                                  <v-col
+                                    cols="12"
+                                    sm="6"
+                                  >
+                                    <v-autocomplete
+                                      :items="['Skiing', 'Ice hockey', 'Soccer', 'Basketball', 'Hockey', 'Reading', 'Writing', 'Coding', 'Basejump']"
+                                      label="Interests"
+                                      multiple
+                                    ></v-autocomplete>
+                                  </v-col>
+                                </v-row>
+                              </v-container>
+                              <small>*indicates required field</small>
+                            </v-card-text>
+                            <v-card-actions>
+                              <v-spacer></v-spacer>
+                              <v-btn
+                                color="blue darken-1"
+                                text
+                                @click="dialog = false"
+                              >
+                                Close
+                              </v-btn>
+                              <v-btn
+                                color="blue darken-1"
+                                text
+                                @click="dialog = false"
+                              >
+                                Save
+                              </v-btn>
+                            </v-card-actions>
+                          </v-card>
+                        </v-dialog>
+                        <!--*********************-->
+                        <!-- EDIT-->
+                        <!--*********************-->
+                        <v-btn
+                          color="blue-grey"
+                          class="mx-1 white--text"
+                          @click.stop="dialogEdit = true"
+                        >
+                          แก้ไข
+                        </v-btn>
+                        <v-dialog
+                          v-model="dialogEdit"
+                          max-width="290"
+                        >
+                          <v-card>
+                            <v-card-title class="headline">
+                              Use Google's location service?
+                            </v-card-title>
+
+                            <v-card-text>
+                              Let Google help apps determine location. This means sending anonymous location data to
+                              Google, even when no apps are running.
+                            </v-card-text>
+
+                            <v-card-actions>
+                              <v-spacer></v-spacer>
+
+                              <v-btn
+                                color="green darken-1"
+                                text
+                                @click="dialog = false"
+                              >
+                                Disagree
+                              </v-btn>
+
+                              <v-btn
+                                color="green darken-1"
+                                text
+                                @click="dialog = false"
+                              >
+                                Agree
+                              </v-btn>
+                            </v-card-actions>
+                          </v-card>
+                        </v-dialog>
+                        <!--*********************-->
+                        <!-- DELETE-->
+                        <!--*********************-->
+                        <v-btn
+                          color="blue-grey"
+                          class="white--text"
+                        >
+                          ลบ
+                        </v-btn>
+                      </v-row>
+                    </template>
+
+
+                  </v-card-title>
+
+                </v-col>
+
+                <v-col
                   v-for="item in props.items"
                   :key="item.name"
                   cols="12"
@@ -87,25 +244,27 @@
                 >
                   <v-card>
                     <v-card-title class="subheading font-weight-bold">
-                      {{ item.name }}
+                      <a href="./detail" style="color: #47494e">{{ item.name }}</a>
                     </v-card-title>
 
                     <v-divider></v-divider>
 
                     <v-list dense>
                       <v-list-item
-                          v-for="(key, index) in filteredKeys"
-                          :key="index"
+                        v-for="(key, index) in filteredKeys"
+                        :key="index"
+                      >
+                        <v-list-item-content :class="{ 'blue--text': sortBy === key }">
+                          {{ key }}:
+                        </v-list-item-content>
+                        <v-list-item-content
+                          class="align-end"
+                          :class="{ 'blue--text': sortBy === key }"
                         >
-                          <v-list-item-content :class="{ 'blue--text': sortBy === key }">
-                            {{ key }}:
-                          </v-list-item-content>
-                          <v-list-item-content
-                            class="align-end"
-                            :class="{ 'blue--text': sortBy === key }"
-                          >
-                            {{ item[key.toLowerCase()] }}
-                          </v-list-item-content>
+                          Firth
+                          {{ items.createdBy }}
+                          {{ items[key.toLowerCase()] }}
+                        </v-list-item-content>
                       </v-list-item>
                     </v-list>
                   </v-card>
@@ -179,13 +338,14 @@
           </v-data-iterator>
         </v-container>
       </template>
+
     </v-col>
   </v-row>
+
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
-import VuetifyLogo from '~/components/VuetifyLogo.vue'
+import AddProject from "@/components/AddProject";
 
 export default {
   data() {
@@ -204,11 +364,11 @@ export default {
       items: [
         {
           name: 'System True-Wallet',
-          CreatedBy:'123',
+          createdBy: '123',
         },
         {
           name: 'System True-Wallet1',
-          CreatedBy:'123',
+          CreatedBy: '123',
 
         },
         {
@@ -303,6 +463,8 @@ export default {
 
         }
       ],
+      dialogAdd: false,
+      dialogEdit: false,
     }
   },
   computed: {
@@ -325,7 +487,7 @@ export default {
     },
   },
   components: {
-
+    AddProject
   }
 }
 </script>
