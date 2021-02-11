@@ -12,6 +12,9 @@
             :sort-desc="sortDesc"
             hide-default-footer
           >
+            <!--*********************-->
+            <!-- Search-->
+            <!--*********************-->
             <template v-slot:header>
               <v-toolbar
                 dark
@@ -28,24 +31,13 @@
                   label="Search"
                 ></v-text-field>
                 <template v-if="$vuetify.breakpoint.mdAndUp">
-                  <v-spacer></v-spacer>
                   <v-select
+                    class="ma-2"
                     v-model="sortBy"
                     flat
                     solo-inverted
                     hide-details
                     :items="keys"
-                    prepend-inner-icon="mdi-magnify"
-                    label="Sort by"
-                  ></v-select>
-                  <v-spacer></v-spacer>
-                  <v-select
-                    v-model="sortBy"
-                    flat
-                    solo-inverted
-                    hide-details
-                    :items="keys"
-                    prepend-inner-icon="mdi-magnify"
                     label="Sort by"
                   ></v-select>
 
@@ -74,32 +66,134 @@
                 </template>
               </v-toolbar>
             </template>
-
+            <!--*********************-->
+            <!-- Project list -->
+            <!--*********************-->
             <template v-slot:default="props">
               <v-row>
                 <v-col
                   cols="12"
                 >
+                  <div class="ma-2">
+                    <v-btn
+                      color="primary"
+                      class="white--text"
+                      @click.stop="dialogAdd = true"
+                    >
+                      Add Project
+                    </v-btn>
+                    <v-dialog
+                      v-model="dialogAdd"
+                      max-width="600"
+                    >
+                      <v-card>
+                        <v-card-title>
+                          <span class="headline">New Project</span>
+                        </v-card-title>
+                        <v-card-text>
+                          <v-container>
+                            <v-row>
+                              <v-col
+                                cols="12"
+                              >
+                                <v-text-field
+                                  label="Project Name"
+                                  prepend-icon="mdi-folder"
+                                  required
+                                ></v-text-field>
+                              </v-col>
+                              <v-col cols="12">
+                                <v-text-field
+                                  label="Git Repository Name"
+                                  prepend-icon="mdi-git"
+                                  required
+                                ></v-text-field>
+                              </v-col>
+                              <v-col cols="12">
+                                <v-autocomplete
+                                  v-model="value"
+                                  :items="teamMember"
+                                  prepend-icon="mdi-account"
+                                  attach
+                                  chips
+                                  label="Person in charge"
+                                  multiple
+                                ></v-autocomplete>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                              >
+                                <v-text-field
+                                  label="Environment Type"
+                                  prepend-icon="mdi-nature"
+                                  required
+                                ></v-text-field>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                                sm="6"
+                              >
+                                <v-text-field
+                                  label="Key"
+                                  prepend-icon="mdi-key"
+                                  required
+                                ></v-text-field>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                                sm="6"
+                              >
+                                <v-text-field
+                                  label="Value"
+                                  prepend-icon="mdi-server-security"
+                                  required
+                                ></v-text-field>
+                              </v-col>
+                            </v-row>
+                          </v-container>
+                        </v-card-text>
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn
+                            color="green darken-1"
+                            text
+                            @click="dialog = false"
+                          >
+                            Add
+                          </v-btn>
+                          <v-btn
+                            color="red darken-2"
+                            text
+                            @click="dialog = false"
+                          >
+                            Cancle
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+                  </div>
                   <v-expansion-panels>
                     <v-expansion-panel
                       v-for="(item,i) in productName"
                       :key="i"
                     >
                       <v-expansion-panel-header expand-icon="mdi-menu-down">
-                        <h2>{{item.name}}</h2>
+                        <h2 style="font-weight: inherit">{{ item.name }}</h2>
                       </v-expansion-panel-header>
-                      <v-expansion-panel-content>
+                      <!--*********************-->
+                      <!-- Detail-->
+                      <!--*********************-->
+                      <v-expansion-panel-content v-for="(x,i) in detail"
+                                                 :key="i">
+
                         <template>
                           <v-container>
-                            <p class="display-3 text--primary">
-                              Mepo
+                            <p class="display-1 text--primary">
+                              Detail :
                             </p>
                             <p class="display-5 text--primary">
-                              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium debitis eum iste libero natus non
-                              odit
-                              suscipit veritatis vitae voluptates? Autem culpa, labore libero magni natus odio quia tempore voluptatum?
+                              {{ x.description }}
                             </p>
-
                             <v-card>
                               <v-card-title>
                                 Git Repositories
@@ -107,7 +201,8 @@
                               <v-row>
                                 <v-col cols="4">
                                   <h3 style="margin: 15px">
-                                    Remote name : <span style="color: #47494e; font-weight: lighter">zipzoft / mepo</span>
+                                    Remote name : <span
+                                    style="color: #47494e; font-weight: lighter">{{x.git}}</span>
                                   </h3>
                                 </v-col>
                                 <v-col cols="8">
@@ -120,6 +215,7 @@
                                       mdi-git
                                     </v-icon>
                                     <a href="/https://github.com/zipzoft/mepo">https://github.com/zipzoft/mepo</a>
+                                    {{x.git.gitUrl}}
                                   </v-chip>
                                   <template>
                                     <v-menu
@@ -277,7 +373,6 @@
 
 
                                 </v-col>
-
                               </v-row>
                             </v-card>
                             <v-card style="margin-top: 30px">
@@ -287,16 +382,12 @@
                                     Environment
                                   </v-card-title>
                                 </v-col>
-
                               </v-row>
-
-                              <v-expansion-panels class="mb-6" >
+                              <v-expansion-panels class="mb-6">
                                 <v-expansion-panel
                                   v-for="(items ,i) in items"
                                   :key="i"
-
                                 >
-
                                   <v-expansion-panel-header expand-icon="mdi-menu-down">
                                     <h3>{{ items.name }}</h3>
                                   </v-expansion-panel-header>
@@ -319,8 +410,139 @@
                                 </v-expansion-panel>
                               </v-expansion-panels>
                             </v-card>
-
-
+                            <template>
+                              <v-btn
+                                :loading="loading3"
+                                :disabled="loading3"
+                                color="green lighten-1"
+                                class="ma-1 white--text"
+                                @click="editItem()"
+                              >
+                                แก้ไข
+                                <v-icon
+                                  right
+                                  dark
+                                >
+                                  mdi-border-color
+                                </v-icon>
+                              </v-btn>
+                              <v-btn
+                                v-model="dialogDelete"
+                                :loading="loading3"
+                                :disabled="loading3"
+                                color="red darken-1"
+                                class="ma-1 white--text"
+                                @click="deleteItem(item)"
+                              >
+                                ลบ
+                                <v-icon
+                                  right
+                                  dark
+                                >
+                                  mdi-delete-empty
+                                </v-icon>
+                              </v-btn>
+                              <v-dialog v-model="dialogDelete" max-width="500px">
+                                <v-card>
+                                  <v-card-title class="headline">Are you sure you want to delete this item?</v-card-title>
+                                  <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="green lighten-1" class="white--text" @click="deleteItemConfirm">OK</v-btn>
+                                    <v-btn color="red darken-1" class="white--text" @click="closeDelete">Cancel</v-btn>
+                                    <v-spacer></v-spacer>
+                                  </v-card-actions>
+                                </v-card>
+                              </v-dialog>
+                              <v-dialog
+                                v-model="dialogEdit"
+                                max-width="600"
+                              >
+                                <v-card>
+                                  <v-card-title>
+                                    <span class="headline">New Project</span>
+                                  </v-card-title>
+                                  <v-card-text>
+                                    <v-container>
+                                      <v-row>
+                                        <v-col
+                                          cols="12"
+                                        >
+                                          <v-text-field
+                                            label="Project Name"
+                                            prepend-icon="mdi-folder"
+                                            required
+                                          ></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12">
+                                          <v-text-field
+                                            label="Git Repository Name"
+                                            prepend-icon="mdi-git"
+                                            required
+                                          ></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12">
+                                          <v-autocomplete
+                                            v-model="value"
+                                            :items="teamMember"
+                                            prepend-icon="mdi-account"
+                                            attach
+                                            chips
+                                            label="Person in charge"
+                                            multiple
+                                          ></v-autocomplete>
+                                        </v-col>
+                                        <v-col
+                                          cols="12"
+                                        >
+                                          <v-text-field
+                                            label="Environment Type"
+                                            prepend-icon="mdi-nature"
+                                            required
+                                          ></v-text-field>
+                                        </v-col>
+                                        <v-col
+                                          cols="12"
+                                          sm="6"
+                                        >
+                                          <v-text-field
+                                            label="Key"
+                                            prepend-icon="mdi-key"
+                                            required
+                                          ></v-text-field>
+                                        </v-col>
+                                        <v-col
+                                          cols="12"
+                                          sm="6"
+                                        >
+                                          <v-text-field
+                                            label="Value"
+                                            prepend-icon="mdi-server-security"
+                                            required
+                                          ></v-text-field>
+                                        </v-col>
+                                      </v-row>
+                                    </v-container>
+                                  </v-card-text>
+                                  <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn
+                                      color="green darken-1"
+                                      text
+                                      @click="dialog = false"
+                                    >
+                                      Add
+                                    </v-btn>
+                                    <v-btn
+                                      color="red darken-2"
+                                      text
+                                      @click="dialog = false"
+                                    >
+                                      Cancle
+                                    </v-btn>
+                                  </v-card-actions>
+                                </v-card>
+                              </v-dialog>
+                            </template>
                           </v-container>
 
                         </template>
@@ -330,7 +552,9 @@
                 </v-col>
               </v-row>
             </template>
-
+            <!--*********************-->
+            <!-- Footer-->
+            <!--*********************-->
             <template v-slot:footer>
               <v-container>
                 <v-row
@@ -387,6 +611,7 @@
                     color="blue darken-3"
                     class="ml-1"
                     @click="nextPage"
+
                   >
                     <v-icon>mdi-chevron-right</v-icon>
                   </v-btn>
@@ -408,6 +633,7 @@ import AddProject from "@/components/AddProject";
 export default {
   data() {
     return {
+      dialogDelete: false,
       itemsPerPageArray: [10, 15, 20],
       search: '',
       filter: {},
@@ -425,140 +651,64 @@ export default {
           createdBy: '123',
         },
         {
-          name: 'System True-Wallet1',
+          name: 'chat-banner',
           CreatedBy: '123',
+        },
+        {
+          name: 'free-credit',
 
         },
         {
-          name: 'System True-Wallet2',
-
+          name: 'remove-main-manu',
         },
         {
-          name: 'System True-Wallet3',
-        },
-        {
-          name: 'System True-Wallet4',
-
-
-        },
-        {
-          name: 'System True-Wallet6',
-
-        },
-        {
-          name: 'System True-Wallet7',
-
-        },
-        {
-          name: 'Honeycomb',
-
-        },
-        {
-          name: 'Donut',
-
-        },
-        {
-          name: 'KitKat',
-        },
-        {
-          name: 'System True-Wallet2',
-
-        },
-        {
-          name: 'System True-Wallet3',
-        },
-        {
-          name: 'System True-Wallet4',
+          name: 'aks-me-pay',
 
 
         },
         {
-          name: 'System True-Wallet6',
+          name: 'dashboard',
 
         },
         {
-          name: 'System True-Wallet7',
+          name: 'live-streaming',
 
         },
         {
-          name: 'System True-Wallet2',
+          name: 'customer-search',
 
         },
-        {
-          name: 'System True-Wallet3',
-        },
-        {
-          name: 'System True-Wallet4',
-
-
-        },
-        {
-          name: 'System True-Wallet6',
-
-        },
-        {
-          name: 'System True-Wallet7',
-
-        },
-        {
-          name: 'System True-Wallet2',
-
-        },
-        {
-          name: 'System True-Wallet3',
-        },
-        {
-          name: 'System True-Wallet4',
-
-
-        },
-        {
-          name: 'System True-Wallet6',
-
-        },
-        {
-          name: 'System True-Wallet7',
-
-        }
       ],
       dialogAdd: false,
       dialogEdit: false,
-      teamMember:["firth","Elon","Bill","Jeff","Steve"],
-      items:[{
+      teamMember: ["firth", "Elon", "Bill", "Jeff", "Steve"],
+      items: [{
         name: "Production",
-        key:"AB BC ABCD",
-        value:"123456789"
+        key: "AB BC ABCD",
+        value: "123456789",
+        detail: "A pilot from Grand Rapids is delighted when she gets the chance to take part in the final of a dancing competition. However, her chances are scuppered when her daughter goes missing. Distraught at losing a dancing competition, the pilot kills herself.",
       },
         {
           name: "Staging",
-          key:"KITTY KITTYKAT",
-          value:"1212312121"
+          key: "KITTY KITTYKAT",
+          value: "1212312121",
+          detail: "When a fairy from Darwin decides to become a fugitive, not everybody is supportive. However, her fortunes improve when her gardener finds a magic knitting needle. It turns out they were teddy bears all along.",
         }],
-
-      messages: [
-        {
-          avatar: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460',
-          name: 'Production',
-          title: 'Value',
-          excerpt: 'hello hello hello hello hello hello hello',
-        },
-        {
-          color: 'red',
-          icon: 'mdi-account-multiple',
-          name: 'Staging',
-          new: 1,
-          title: 'Value',
-        },
-        {
-          color: 'teal',
-          icon: 'mdi-tag',
-          name: 'Dev',
-          new: 2,
-          title: 'Value',
-          exceprt: 'New deals available, Join Today',
-        },
-      ],
       lorem: 'Lorem ipsum dolor sit amet, at aliquam vivendum vel,  Eum in consul legimus accusam. corruptegendi ius at, at nemore equam cum.',
+      detail: [{
+        description: "A pilot from Grand Rapids is delighted when she gets the chance to take part in the final of a dancing competition. However, her chances are scuppered when her daughter goes missing. Distraught at losing a dancing competition, the pilot kills herself.",
+        git: [{
+          remoteName: " zipzoft / mepo",
+          gitUrl: 'https://github.com/zipzoft/mepo',
+          personInCharge: ['firth', 'win', 'snuc']
+        }],
+        environ: [{
+          name: "Production",
+          key: "AB BC ABCD",
+          value: "123456789",
+        }]
+      },
+      ]
     }
   },
   computed: {
@@ -578,6 +728,16 @@ export default {
     },
     updateItemsPerPage(number) {
       this.itemsPerPage = number
+    },
+    deleteItem(item) {
+      // this.editedIndex = this.desserts.indexOf(item)
+      // this.editedItem = Object.assign({}, item)
+      this.dialogDelete = true
+    },
+    editItem(item) {
+      // this.editedIndex = this.desserts.indexOf(item)
+      // this.editedItem = Object.assign({}, item)
+      this.dialogEdit = true
     },
   },
   components: {
