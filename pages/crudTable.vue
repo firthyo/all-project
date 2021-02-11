@@ -1,27 +1,163 @@
 <template>
   <v-data-table
-    :headers="dessertHeaders"
+    :headers="headers"
     :items="desserts"
     :single-expand="singleExpand"
     :expanded.sync="expanded"
-    item-key="name"
-    show-expand
+    sort-by="calories"
     class="elevation-1"
+    show-expand
+    style="font-size: 40px"
   >
     <template v-slot:top>
-      <v-toolbar flat>
-        <v-toolbar-title>Expandable Table</v-toolbar-title>
+      <v-toolbar
+        flat
+      >
+        <v-toolbar-title>My CRUD</v-toolbar-title>
+        <v-divider
+          class="mx-4"
+          inset
+          vertical
+        ></v-divider>
         <v-spacer></v-spacer>
-        <v-switch
-          v-model="singleExpand"
-          label="Single expand"
-          class="mt-2"
-        ></v-switch>
+        <v-dialog
+          v-model="dialog"
+          max-width="500px"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              color="primary"
+              dark
+              class="mb-2"
+              v-bind="attrs"
+              v-on="on"
+            >
+              New Item
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-title>
+              <span class="headline">New Project</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col
+                    cols="12"
+                  >
+                    <v-text-field
+                      label="Project Name"
+                      prepend-icon="mdi-folder"
+                      required
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-text-field
+                      label="Git Repository Name"
+                      prepend-icon="mdi-git"
+                      required
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-autocomplete
+                      v-model="value"
+                      :items="teamMember"
+                      prepend-icon="mdi-account"
+                      attach
+                      chips
+                      label="Person in charge"
+                      multiple
+                    ></v-autocomplete>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                  >
+                    <v-text-field
+                      label="Environment Type"
+                      prepend-icon="mdi-nature"
+                      required
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                  >
+                    <v-text-field
+                      label="Key"
+                      prepend-icon="mdi-key"
+                      required
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                  >
+                    <v-text-field
+                      label="Value"
+                      prepend-icon="mdi-server-security"
+                      required
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="green darken-1"
+                text
+                @click="dialog = false"
+              >
+                Add
+              </v-btn>
+              <v-btn
+                color="red darken-2"
+                text
+                @click="dialog = false"
+              >
+                Cancle
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-dialog v-model="dialogDelete" max-width="500px">
+          <v-card>
+            <v-card-title class="headline">Are you sure you want to delete this item?</v-card-title>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
+              <v-btn color="blue darken-1" text @click="deleteItemConfirm">OK</v-btn>
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-toolbar>
+    </template>
+    <template v-slot:item.actions="{ item }">
+      <v-icon
+        small
+        class="mr-2"
+        @click="editItem(item)"
+      >
+        mdi-file-document
+      </v-icon>
+      <v-icon
+        small
+        @click="deleteItem(item)"
+      >
+        mdi-delete
+      </v-icon>
+    </template>
+    <template v-slot:no-data>
+      <v-btn
+        color="primary"
+        @click="initialize"
+      >
+        Reset
+      </v-btn>
     </template>
     <template v-slot:expanded-item="{ headers, item }">
       <td :colspan="headers.length">
-        More info about {{ item.name }}
         <template>
           <v-container>
             <p class="display-3 text--primary">
@@ -270,148 +406,211 @@
         </template>
       </td>
     </template>
+
   </v-data-table>
+
 </template>
 <script>
 export default {
-  data () {
-    return {
-      expanded: [],
-      singleExpand: false,
-      menu: false,
-      items:[{
-        name: "Production",
-        key:"AB BC ABCD",
-        value:"123456789"
-      },
-        {
-          name: "Staging",
-          key:"KITTY KITTYKAT",
-          value:"1212312121"
-        }],
 
-      messages: [
+  name: "crudTable.vue",
+
+  data: () => ({
+    expanded: [],
+    singleExpand: false,
+    dialog: false,
+    dialogDelete: false,
+    headers: [
+      {
+        text: 'Project Name',
+        align: 'start',
+        // sortable: false,
+        value: 'projectName',
+      },
+      {text: 'Git Repo Name', value: 'gitRepoName'},
+      // {text: 'Fat (g)', value: 'fat'},
+      // {text: 'Carbs (g)', value: 'carbs'},
+      // {text: 'Protein (g)', value: 'protein'},
+      {text:'Created By', value: 'createdBy'},
+      {text: 'Actions', value: 'actions', sortable: false},
+    ],
+    desserts: [],
+    editedIndex: -1,
+    editedItem: {
+      projectName: '',
+      gitRepoName : 'System',
+      createdBy : 'Firthyo',
+    },
+    defaultItem: {
+      projectName: '',
+      gitRepoName : '',
+      createdBy : '',
+    },
+    menu: false,
+    items:[{
+      name: "Production",
+      key:"AB BC ABCD",
+      value:"123456789"
+    },
+      {
+        name: "Staging",
+        key:"KITTY KITTYKAT",
+        value:"1212312121"
+      }],
+
+    messages: [
+      {
+        avatar: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460',
+        name: 'Production',
+        title: 'Value',
+        excerpt: 'hello hello hello hello hello hello hello',
+      },
+      {
+        color: 'red',
+        icon: 'mdi-account-multiple',
+        name: 'Staging',
+        new: 1,
+        title: 'Value',
+      },
+      {
+        color: 'teal',
+        icon: 'mdi-tag',
+        name: 'Dev',
+        new: 2,
+        title: 'Value',
+        exceprt: 'New deals available, Join Today',
+      },
+    ],
+    lorem: 'Lorem ipsum dolor sit amet, at aliquam vivendum vel, everti delicatissimi cu eos. Dico iuvaret debitis mel an, et cum zril menandri. Eum in consul legimus accusam. Ea dico abhorreant duo, quo illum minimum incorrupte no, nostro voluptaria sea eu. Suas eligendi ius at, at nemore equidem est. Sed in error hendrerit, in consul constituam cum.',
+
+
+  }),
+
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+    },
+  },
+
+  watch: {
+    dialog(val) {
+      val || this.close()
+    },
+    dialogDelete(val) {
+      val || this.closeDelete()
+    },
+  },
+
+  created() {
+    this.initialize()
+  },
+
+  methods: {
+    initialize() {
+      this.desserts = [
         {
-          avatar: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460',
-          name: 'Production',
-          title: 'Value',
-          excerpt: 'hello hello hello hello hello hello hello',
+          projectName: 'Frozen Yogurt',
+          gitRepoName : 'System',
+          createdBy : 'Firthyo',
         },
         {
-          color: 'red',
-          icon: 'mdi-account-multiple',
-          name: 'Staging',
-          new: 1,
-          title: 'Value',
+          projectName: 'Ice cream sandwich',
+          gitRepoName : 'System',
+          createdBy : 'Firthyo',
         },
         {
-          color: 'teal',
-          icon: 'mdi-tag',
-          name: 'Dev',
-          new: 2,
-          title: 'Value',
-          exceprt: 'New deals available, Join Today',
-        },
-      ],
-      lorem: 'Lorem ipsum dolor sit amet, nemore equidem est. Sed in error hendrerit, in consul constituam cum.',
-      dessertHeaders: [
-        {
-          text: 'Dessert (100g serving)',
-          align: 'start',
-          sortable: false,
-          value: 'name',
-        },
-        { text: 'Calories', value: 'calories' },
-        { text: 'Fat (g)', value: 'fat' },
-        { text: 'Carbs (g)', value: 'carbs' },
-        { text: 'Protein (g)', value: 'protein' },
-        {text: 'Actions', value: 'actions', sortable: false},
-        { text: '', value: 'data-table-expand' },
-      ],
-      desserts: [
-        {
-          name: 'Frozen Yogurt',
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0,
-          iron: '1%',
-          actions: 'icon',
+          projectName: 'Eclair',
+          gitRepoName : 'System',
+          createdBy : 'Firthyo',
         },
         {
-          name: 'Ice cream sandwich',
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3,
-          iron: '1%',
+          projectName: 'Cupcake',
+          gitRepoName : 'System',
+          createdBy : 'Firthyo',
         },
         {
-          name: 'Eclair',
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0,
-          iron: '7%',
+          projectName: 'Gingerbread',
+          gitRepoName : 'System',
+          createdBy : 'Firthyo',
         },
         {
-          name: 'Cupcake',
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3,
-          iron: '8%',
+          projectName: 'Jelly bean',
+          gitRepoName : 'System',
+          createdBy : 'Firthyo',
         },
         {
-          name: 'Gingerbread',
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9,
-          iron: '16%',
+          projectName: 'Lollipop',
+          gitRepoName : 'System',
+          createdBy : 'Firthyo',
         },
         {
-          name: 'Jelly bean',
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0,
-          iron: '0%',
+          projectName: 'Honeycomb',
+          gitRepoName : 'System',
+          createdBy : 'Firthyo',
         },
         {
-          name: 'Lollipop',
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0,
-          iron: '2%',
+          projectName: 'Donut',
+          gitRepoName : 'System',
+          createdBy : 'Firthyo',
         },
         {
-          name: 'Honeycomb',
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5,
-          iron: '45%',
+          projectName: 'KitKat',
+          gitRepoName : 'System',
+          createdBy : 'Firthyo',
         },
-        {
-          name: 'Donut',
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9,
-          iron: '22%',
-        },
-        {
-          name: 'KitKat',
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7,
-          iron: '6%',
-        },
-      ],
-    }
+      ]
+    },
+
+    editItem(item) {
+      this.editedIndex = this.desserts.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialog = true
+    },
+
+    deleteItem(item) {
+      this.editedIndex = this.desserts.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialogDelete = true
+    },
+
+    deleteItemConfirm() {
+      this.desserts.splice(this.editedIndex, 1)
+      this.closeDelete()
+    },
+
+    close() {
+      this.dialog = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
+    },
+
+    closeDelete() {
+      this.dialogDelete = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
+    },
+
+    save() {
+      if (this.editedIndex > -1) {
+        Object.assign(this.desserts[this.editedIndex], this.editedItem)
+      } else {
+        this.desserts.push(this.editedItem)
+      }
+      this.close()
+    },
   },
 }
 </script>
+
+
+
+
+<style scoped>
+table.v-table thead tr th {
+  font-size: 20px!important;
+}
+</style>
