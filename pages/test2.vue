@@ -183,11 +183,15 @@
                       <!--*********************-->
                       <!-- Detail-->
                       <!--*********************-->
-                      <v-expansion-panel-content v-for="(x,i) in detail"
-                                                 :key="i">
+                      <v-expansion-panel-content
+                        v-for="(x,i) in detail"
+                        :key="i"
+                        :detail="detail"
+                      >
 
                         <template>
                           <v-container>
+
                             <p class="display-1 text--primary">
                               Detail :
                             </p>
@@ -468,6 +472,7 @@
                                           cols="12"
                                         >
                                           <v-text-field
+
                                             label="Project Name"
                                             prepend-icon="mdi-folder"
                                             required
@@ -730,8 +735,8 @@ export default {
       this.itemsPerPage = number
     },
     deleteItem(item) {
-      // this.editedIndex = this.desserts.indexOf(item)
-      // this.editedItem = Object.assign({}, item)
+      this.editedIndex = this.desserts.indexOf(item)
+      this.editedItem = Object.assign({}, item)
       this.dialogDelete = true
     },
     editItem(item) {
