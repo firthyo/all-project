@@ -112,6 +112,7 @@
                                   >
                                     <v-text-field
                                       label="Project Name"
+                                      prepend-icon="mdi-folder"
                                       required
                                     ></v-text-field>
                                   </v-col>
@@ -123,9 +124,22 @@
                                     ></v-text-field>
                                   </v-col>
                                   <v-col cols="12">
+                                    <v-autocomplete
+                                      v-model="value"
+                                      :items="teamMember"
+                                      prepend-icon="mdi-account"
+                                      attach
+                                      chips
+                                      label="Person in charge"
+                                      multiple
+                                    ></v-autocomplete>
+                                  </v-col>
+                                  <v-col
+                                    cols="12"
+                                  >
                                     <v-text-field
-                                      label="Password*"
-                                      type="password"
+                                      label="Environment Type"
+                                      prepend-icon="mdi-nature"
                                       required
                                     ></v-text-field>
                                   </v-col>
@@ -133,25 +147,24 @@
                                     cols="12"
                                     sm="6"
                                   >
-                                    <v-select
-                                      :items="['0-17', '18-29', '30-54', '54+']"
-                                      label="Age*"
+                                    <v-text-field
+                                      label="Key"
+                                      prepend-icon="mdi-key"
                                       required
-                                    ></v-select>
+                                    ></v-text-field>
                                   </v-col>
                                   <v-col
                                     cols="12"
                                     sm="6"
                                   >
-                                    <v-autocomplete
-                                      :items="['Skiing', 'Ice hockey', 'Soccer', 'Basketball', 'Hockey', 'Reading', 'Writing', 'Coding', 'Basejump']"
-                                      label="Interests"
-                                      multiple
-                                    ></v-autocomplete>
+                                    <v-text-field
+                                      label="Value"
+                                      prepend-icon="mdi-server-security"
+                                      required
+                                    ></v-text-field>
                                   </v-col>
                                 </v-row>
                               </v-container>
-                              <small>*indicates required field</small>
                             </v-card-text>
                             <v-card-actions>
                               <v-spacer></v-spacer>
@@ -465,6 +478,7 @@ export default {
       ],
       dialogAdd: false,
       dialogEdit: false,
+      teamMember:["firth","Elon","Bill","Jeff","Steve"],
     }
   },
   computed: {
