@@ -169,18 +169,18 @@
                             <v-card-actions>
                               <v-spacer></v-spacer>
                               <v-btn
-                                color="blue darken-1"
+                                color="green darken-1"
                                 text
                                 @click="dialog = false"
                               >
-                                Close
+                                Add
                               </v-btn>
                               <v-btn
-                                color="blue darken-1"
+                                color="red darken-2"
                                 text
                                 @click="dialog = false"
                               >
-                                Save
+                                Cancle
                               </v-btn>
                             </v-card-actions>
                           </v-card>
@@ -265,7 +265,7 @@
                     <v-list dense>
                       <v-list-item
                         v-for="(key, index) in filteredKeys"
-                        :key="index"
+                        :key="card"
                       >
                         <v-list-item-content :class="{ 'blue--text': sortBy === key }">
                           {{ key }}:
@@ -310,7 +310,7 @@
                     <v-list>
                       <v-list-item
                         v-for="(number, index) in itemsPerPageArray"
-                        :key="index"
+                        :key="card"
                         @click="updateItemsPerPage(number)"
                       >
                         <v-list-item-title>{{ number }}</v-list-item-title>
