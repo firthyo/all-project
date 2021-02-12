@@ -74,10 +74,13 @@
                 <v-col
                   cols="12"
                 >
-                  <div class="ma-2">
+                  <!--                  template -->
+                  <template >
                     <v-btn
+                      v-bind="attrs"
+                      v-on="on"
                       color="primary"
-                      class="white--text"
+                      class="white--text; ma-2"
                       @click.stop="dialogAdd = true"
                     >
                       Add Project
@@ -157,9 +160,9 @@
                           <v-btn
                             color="green darken-1"
                             text
-                            @click="dialog = false"
+                            @click="save"
                           >
-                            Add
+                            Save
                           </v-btn>
                           <v-btn
                             color="red darken-2"
@@ -171,31 +174,29 @@
                         </v-card-actions>
                       </v-card>
                     </v-dialog>
-                  </div>
+                  </template>
+
                   <v-expansion-panels>
                     <v-expansion-panel
-                      v-for="(item,i) in testtest"
+                      v-for="(item,i) in testtest "
                       :key="i"
                     >
                       <v-expansion-panel-header expand-icon="mdi-menu-down">
-                        <h2 style="font-weight: inherit">{{ item.productName1 }}</h2>
+                        <h2 style="font-weight: inherit">{{ item.productName }}</h2>
                       </v-expansion-panel-header>
                       <!--*********************-->
                       <!-- Detail-->
                       <!--*********************-->
                       <v-expansion-panel-content
-                        v-for="(x,i) in detail"
-                        :key="i"
                       >
-
                         <template>
                           <v-container>
 
-                            <p class="display-1 text--primary">
+                            <p class="display-2 text--primary" style="font-weight: lighter;">
                               Detail :
                             </p>
                             <p class="display-5 text--primary">
-                              {{ x.description }}
+                              {{ item.detail }}
                             </p>
                             <v-card>
                               <v-card-title>
@@ -205,7 +206,7 @@
                                 <v-col cols="4">
                                   <h3 style="margin: 15px">
                                     Remote name : <span
-                                    style="color: #47494e; font-weight: lighter">{{ x.git }}</span>
+                                    style="color: #47494e; font-weight: lighter">{{ item.remoteName }}</span>
                                   </h3>
                                 </v-col>
                                 <v-col cols="8">
@@ -213,12 +214,13 @@
                                     class="ma-2"
                                     color="primary"
                                     outlined
+
                                   >
                                     <v-icon left>
                                       mdi-git
                                     </v-icon>
-                                    <a href="/https://github.com/zipzoft/mepo">https://github.com/zipzoft/mepo</a>
-                                    {{ x.git.gitUrl }}
+                                    <a href="/https://github.com/zipzoft/mepo">{{ item.gitUrl }}</a>
+
                                   </v-chip>
                                   <template>
                                     <v-menu
@@ -233,11 +235,12 @@
                                           pill
                                           v-on="on"
                                           color="primary"
+                                          v-for="person in item.personInCharge "
                                         >
                                           <v-avatar left>
                                             <v-icon>mdi-account-circle</v-icon>
                                           </v-avatar>
-                                          Firth Maneesuksri
+                                          {{ person }}
                                         </v-chip>
                                       </template>
                                       <v-card width="280">
@@ -271,56 +274,11 @@
                                       </v-card>
                                     </v-menu>
                                   </template>
-                                  <template>
-                                    <v-menu
-                                      v-model="menu"
-                                      bottom
-                                      right
-                                      transition="scale-transition"
-                                      origin="top left"
-                                    >
-                                      <template v-slot:activator="{ on }">
-                                        <v-chip
-                                          pill
-                                          v-on="on"
-                                          color="primary"
-                                        >
-                                          <v-avatar left>
-                                            <v-icon>
-                                              mdi-account-circle
-                                            </v-icon>
-                                          </v-avatar>
-                                          Elmo Berg
-                                        </v-chip>
-                                      </template>
-                                    </v-menu>
-                                  </template>
-                                  <template>
-                                    <v-menu
-                                      v-model="menu"
-                                      bottom
-                                      right
-                                      transition="scale-transition"
-                                      origin="top left"
-                                    >
-                                      <template v-slot:activator="{ on }">
-                                        <v-chip
-                                          pill
-                                          v-on="on"
-                                          color="primary"
-                                        >
-                                          <v-avatar left>
-                                            <v-icon>mdi-account-circle</v-icon>
-                                          </v-avatar>
-                                          Elon Musk
-                                        </v-chip>
-                                      </template>
-                                    </v-menu>
-                                  </template>
                                 </v-col>
                               </v-row>
                               <v-divider></v-divider>
                               <v-row>
+                                <!--branches-->
                                 <v-col cols="4">
                                   <h3 style="margin: 15px">
                                     Branches : <span style="color: #47494e; font-weight: lighter">12</span>
@@ -371,10 +329,7 @@
                                     <v-icon>
                                       mdi-dots-horizontal
                                     </v-icon>
-
                                   </v-chip>
-
-
                                 </v-col>
                               </v-row>
                             </v-card>
@@ -388,25 +343,21 @@
                               </v-row>
                               <v-expansion-panels class="mb-6">
                                 <v-expansion-panel
-                                  v-for="(items ,i) in items"
-                                  :key="i"
                                 >
-                                  <v-expansion-panel-header expand-icon="mdi-menu-down">
-                                    <h3>{{ items.name }}</h3>
+                                  <v-expansion-panel-header expand-icon="mdi-menu-down"
+                                                            v-for="envitem in item.env"
+                                  >
+                                    <h3>{{ envitem.envname}}</h3>
                                   </v-expansion-panel-header>
-                                  <v-expansion-panel-content>
+                                  <v-expansion-panel-content
+                                    v-for="kv in item.env"
+                                  >
                                     <v-row>
                                       <v-col cols="6">
-                                        Key : {{ items.key }}
+                                        Key : {{ kv.key }}
                                       </v-col>
                                       <v-col cols="6">
-                                        Value : {{ items.value }}
-                                      </v-col>
-                                      <v-col cols="6">
-                                        Key : AB ABC ABCD
-                                      </v-col>
-                                      <v-col cols="6">
-                                        Value : 123456789
+                                        Value : {{ kv.value }}
                                       </v-col>
                                     </v-row>
                                   </v-expansion-panel-content>
@@ -464,7 +415,7 @@
                               >
                                 <v-card>
                                   <v-card-title>
-                                    <span class="headline">New Project</span>
+                                    <span class="headline">Edit Project</span>
                                   </v-card-title>
                                   <v-card-text>
                                     <v-container>
@@ -473,7 +424,7 @@
                                           cols="12"
                                         >
                                           <v-text-field
-
+                                            v-model="editedItem.name"
                                             label="Project Name"
                                             prepend-icon="mdi-folder"
                                             required
@@ -685,31 +636,64 @@ export default {
 
         },
       ],
-      testtest: [{
-        productName1: 'customer-search',
-        remoteName1: " zipzoft / mepo",
-        gitUrl1: 'https://github.com/zipzoft/mepo',
-        personInCharge1: ["firth", "Elon", "Bill", "Jeff", "Steve"],
-        envname1: "Production",
-        key1: "AB BC ABCD",
-        value1: "123456789",
-        detail1: "A pilot from Grand Rapids is delighted when she gets the chance to take part in the final of a dancing competition.",
-      },
-        {
-          productName1: 'chat-banner',
-          remoteName1: " zipzoft / carry",
-          gitUrl1: 'https://github.com/zipzoft/mepo',
-          personInCharge1: ["firth", "mozart", "bach", "beethoven", "chopin"],
-          envname1: "Production",
-          key1: "AB BC ABCD",
-          value1: "123456789",
-          detail1: "A pilot from Grand Rapids is delighted when she gets the chance to take part in the final of a dancing competition.",
-        },
-      ],
-
       dialogAdd: false,
       dialogEdit: false,
+      newItem: [],
+      editedIndex: -1,
+      editedItem: {
+        productName: '',
+        remoteName: '',
+        gitUrl: '',
+        personInCharge: '',
+        detail: '',
+        env:[]
+      },
+      defaultItem: {
+        productName: '',
+        remoteName: '',
+        gitUrl: '',
+        personInCharge: '',
+        detail: '',
+        env:[]
+      },
       teamMember: ["firth", "Elon", "Bill", "Jeff", "Steve"],
+      testtest: [{
+        productName: 'customer-search',
+        remoteName: " zipzoft / mepo",
+        gitUrl: 'https://github.com/zipzoft/mepo',
+        personInCharge: ["firth", "Elon", "Bill", "Steve"],
+        detail: "A pilot from Grand Rapids is delighted when she gets the chance to take part in the final of a dancing competition.",
+        env:[{
+          envname: "Staging",
+          key: ["III", "PPP", "MMM"],
+          value: ["three NYC",],
+        }]
+      }, {
+        productName: 'rename-menu\n',
+        remoteName: " zipzoft / mepo",
+        gitUrl: 'https://github.com/zipzoft/mepo',
+        personInCharge: ["jennie", "jisoo", "rose", "lisa"],
+        detail: "The hero is a goblin from Russia who has a particular interest in breakfast. The nemesis is a goblin who eats too much. It turns out the hero and the nemesis are twins.",
+        env:[{
+          envname: "Production",
+          key: ["ABBC", "WWW", "JAKK"],
+          value: ["onw two three",],
+        }],
+
+      },
+        {
+          productName: 'chat-banner',
+          remoteName: " zipzoft / carry",
+          gitUrl: 'https://github.com/zipzoft/mepo',
+          personInCharge: ["mozart", "bach", "beethoven", "chopin"],
+          detail: "In a world where vampires are starving, one nurse has no choice but to protect mankind by eating his own child. It turns out that the nurse is an android.",
+          env:[{
+            envname: "Production",
+            key: "AB BC ABCD",
+            value: "123456789",
+          }]
+        },
+      ],
       items: [{
         name: "Production",
         key: "AB BC ABCD",
@@ -722,30 +706,12 @@ export default {
           value: "1212312121",
           detail: "When a fairy from Darwin decides to become a fugitive, not everybody is supportive. However, her fortunes improve when her gardener finds a magic knitting needle. It turns out they were teddy bears all along.",
         }],
-      lorem: 'Lorem ipsum dolor sit amet, at aliquam vivendum vel,  Eum in consul legimus accusam. corruptegendi ius at, at nemore equam cum.',
-      detail: [{
-        description: "A pilot from Grand Rapids is delighted when she gets the chance to take part in the final of a dancing competition. However, her chances are scuppered when her daughter goes missing. Distraught at losing a dancing competition, the pilot kills herself.",
-        git: [{
-          remoteName: " zipzoft / mepo",
-          gitUrl: 'https://github.com/zipzoft/mepo',
-          personInCharge: ['firth', 'win', 'snuc']
-        }],
-        environ: [{
-          name: "Production",
-          key: "AB BC ABCD",
-          value: "123456789",
-        }]
-      },
-      ]
     }
   },
   computed: {
-    numberOfPages() {
-      return Math.ceil(this.items.length / this.itemsPerPage)
-    },
-    filteredKeys() {
-      return this.keys.filter(key => key !== 'Name')
-    },
+    // formTitle () {
+    //   return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+    // },
   },
   methods: {
     nextPage() {
@@ -757,14 +723,26 @@ export default {
     updateItemsPerPage(number) {
       this.itemsPerPage = number
     },
+    deleteItemConfirm () {
+      this.testtest.splice(this.editedIndex, 1)
+      this.closeDelete()
+    },
     deleteItem(item) {
-      this.editedIndex = this.desserts.indexOf(item)
+      this.editedIndex = this.testtest.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialogDelete = true
     },
+    save() {
+      if (this.editedIndex > -1) {
+        Object.assign(this.newItem[this.editedIndex], this.editedItem)
+      } else {
+        this.newItem.push(this.editedItem)
+      }
+      this.close()
+    },
     editItem(item) {
-      // this.editedIndex = this.desserts.indexOf(item)
-      // this.editedItem = Object.assign({}, item)
+      this.editedIndex = this.newItem.indexOf(item)
+      this.editedItem = Object.assign({}, item)
       this.dialogEdit = true
     },
   },
@@ -773,4 +751,3 @@ export default {
   }
 }
 </script>
-
