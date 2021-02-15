@@ -59,6 +59,7 @@
                       depressed
                       color="blue"
                       :value="true"
+
                     >
                       <v-icon>mdi-arrow-down</v-icon>
                     </v-btn>
@@ -78,7 +79,6 @@
                   <template >
                     <v-btn
                       v-bind="attrs"
-                      v-on="on"
                       color="primary"
                       class="white--text; ma-2"
                       @click.stop="dialogAdd = true"
@@ -114,7 +114,6 @@
                               </v-col>
                               <v-col cols="12">
                                 <v-autocomplete
-                                  v-model="value"
                                   :items="teamMember"
                                   prepend-icon="mdi-account"
                                   attach
@@ -224,7 +223,6 @@
                                   </v-chip>
                                   <template>
                                     <v-menu
-                                      v-model="menu"
                                       bottom
                                       right
                                       transition="scale-transition"
@@ -233,7 +231,6 @@
                                       <template v-slot:activator="{ on }">
                                         <v-chip
                                           pill
-                                          v-on="on"
                                           color="primary"
                                           v-for="person in item.personInCharge "
                                         >
@@ -366,8 +363,6 @@
                             </v-card>
                             <template>
                               <v-btn
-                                :loading="loading3"
-                                :disabled="loading3"
                                 color="green lighten-1"
                                 class="ma-1 white--text"
                                 @click="editItem()"
@@ -382,8 +377,6 @@
                               </v-btn>
                               <v-btn
                                 v-model="dialogDelete"
-                                :loading="loading3"
-                                :disabled="loading3"
                                 color="red darken-1"
                                 class="ma-1 white--text"
                                 @click="deleteItem(item)"
@@ -439,7 +432,6 @@
                                         </v-col>
                                         <v-col cols="12">
                                           <v-autocomplete
-                                            v-model="value"
                                             :items="teamMember"
                                             prepend-icon="mdi-account"
                                             attach
@@ -527,8 +519,6 @@
                         text
                         color="primary"
                         class="ml-2"
-                        v-bind="attrs"
-                        v-on="on"
                       >
                         {{ itemsPerPage }}
                         <v-icon>mdi-chevron-down</v-icon>
@@ -537,7 +527,7 @@
                     <v-list>
                       <v-list-item
                         v-for="(number, index) in itemsPerPageArray"
-                        :key="card"
+                        :key="index"
                         @click="updateItemsPerPage(number)"
                       >
                         <v-list-item-title>{{ number }}</v-list-item-title>
@@ -598,6 +588,7 @@ export default {
       page: 1,
       itemsPerPage: 10,
       sortBy: 'name',
+      attrs: "",
       keys: [
         'Name',
         'CreatedBy',
@@ -709,6 +700,9 @@ export default {
     }
   },
   computed: {
+    numberOfPages () {
+      return Math.ceil(this.items.length / this.itemsPerPage)
+    },
     // formTitle () {
     //   return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
     // },
@@ -725,7 +719,11 @@ export default {
     },
     deleteItemConfirm () {
       this.testtest.splice(this.editedIndex, 1)
+      console.log(this.editedIndex, this.testtest)
       this.closeDelete()
+    },
+    closeDelete(){
+      this.dialogDelete = false
     },
     deleteItem(item) {
       this.editedIndex = this.testtest.indexOf(item)
