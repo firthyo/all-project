@@ -4,7 +4,7 @@
       <template>
         <v-container fluid>
           <v-data-iterator
-            :items="testtest"
+            :items="allDetail"
             :items-per-page.sync="itemsPerPage"
             :page.sync="page"
             :search="search"
@@ -76,7 +76,7 @@
                   cols="12"
                 >
                   <!--                  template -->
-                  <template >
+                  <template>
                     <v-btn
                       v-bind="attrs"
                       color="primary"
@@ -100,13 +100,22 @@
                                 cols="12"
                               >
                                 <v-text-field
+                                  v-model="addProjectName"
                                   label="Project Name"
+                                  prepend-icon="mdi-folder"
+
+                                  required
+                                ></v-text-field>
+                                <v-text-field
+                                  v-model="addDetail"
+                                  label="Detail"
                                   prepend-icon="mdi-folder"
                                   required
                                 ></v-text-field>
                               </v-col>
                               <v-col cols="12">
                                 <v-text-field
+                                  v-model="addGitRepo"
                                   label="Git Repository Name"
                                   prepend-icon="mdi-git"
                                   required
@@ -114,6 +123,7 @@
                               </v-col>
                               <v-col cols="12">
                                 <v-autocomplete
+                                  v-model="addMember"
                                   :items="teamMember"
                                   prepend-icon="mdi-account"
                                   attach
@@ -122,10 +132,12 @@
                                   multiple
                                 ></v-autocomplete>
                               </v-col>
+
                               <v-col
                                 cols="12"
                               >
                                 <v-text-field
+                                  v-model="addEnv"
                                   label="Environment Type"
                                   prepend-icon="mdi-nature"
                                   required
@@ -136,6 +148,7 @@
                                 sm="6"
                               >
                                 <v-text-field
+                                  v-model="addKey"
                                   label="Key"
                                   prepend-icon="mdi-key"
                                   required
@@ -146,11 +159,13 @@
                                 sm="6"
                               >
                                 <v-text-field
+                                  v-model="addValue"
                                   label="Value"
                                   prepend-icon="mdi-server-security"
                                   required
                                 ></v-text-field>
                               </v-col>
+
                             </v-row>
                           </v-container>
                         </v-card-text>
@@ -168,7 +183,7 @@
                             text
                             @click="dialog = false"
                           >
-                            Cancle
+                            Cancel
                           </v-btn>
                         </v-card-actions>
                       </v-card>
@@ -177,7 +192,7 @@
 
                   <v-expansion-panels>
                     <v-expansion-panel
-                      v-for="(item,i) in testtest "
+                      v-for="(item,i) in allDetail "
                       :key="i"
                     >
                       <v-expansion-panel-header expand-icon="mdi-menu-down">
@@ -190,308 +205,411 @@
                       >
                         <template>
                           <v-container>
+                            <v-row>
+                              <v-col cols="12">
+                                <p class="display-2 text--primary" style="font-weight: lighter;">
+                                  Detail :
+                                </p>
+                              </v-col>
+                              <v-col cols="12">
+                                <p class="display-5 text--primary">
+                                  {{ item.detail }}
+                                </p>
+                              </v-col>
+                              <v-col cols="12">
+                                <v-card>
+                                  <v-card-title>
+                                    Git Repositories
+                                  </v-card-title>
+                                  <v-row>
+                                    <v-col cols="4">
+                                      <h3 style="margin: 15px">
+                                        Remote name : <span
+                                        style="color: #47494e; font-weight: lighter">{{ item.remoteName }}</span>
+                                      </h3>
+                                    </v-col>
+                                    <v-col cols="8">
+                                      <v-chip
+                                        class="ma-2"
+                                        color="primary"
+                                        outlined
 
-                            <p class="display-2 text--primary" style="font-weight: lighter;">
-                              Detail :
-                            </p>
-                            <p class="display-5 text--primary">
-                              {{ item.detail }}
-                            </p>
-                            <v-card>
-                              <v-card-title>
-                                Git Repositories
-                              </v-card-title>
-                              <v-row>
-                                <v-col cols="4">
-                                  <h3 style="margin: 15px">
-                                    Remote name : <span
-                                    style="color: #47494e; font-weight: lighter">{{ item.remoteName }}</span>
-                                  </h3>
-                                </v-col>
-                                <v-col cols="8">
-                                  <v-chip
-                                    class="ma-2"
-                                    color="primary"
-                                    outlined
+                                      >
+                                        <v-icon left>
+                                          mdi-git
+                                        </v-icon>
+                                        <a href="/https://github.com/zipzoft/mepo">{{ item.gitUrl }}</a>
 
-                                  >
-                                    <v-icon left>
-                                      mdi-git
-                                    </v-icon>
-                                    <a href="/https://github.com/zipzoft/mepo">{{ item.gitUrl }}</a>
-
-                                  </v-chip>
-                                  <template>
-                                    <v-menu
-                                      bottom
-                                      right
-                                      transition="scale-transition"
-                                      origin="top left"
-                                    >
-                                      <template v-slot:activator="{ on }">
-                                        <v-chip
-                                          pill
-                                          color="primary"
-                                          v-for="person in item.personInCharge "
+                                      </v-chip>
+                                      <template>
+                                        <v-menu
+                                          bottom
+                                          right
+                                          transition="scale-transition"
+                                          origin="top left"
                                         >
-                                          <v-avatar left>
-                                            <v-icon>mdi-account-circle</v-icon>
-                                          </v-avatar>
-                                          {{ person }}
-                                        </v-chip>
+                                          <template v-slot:activator="{ on }">
+                                            <v-chip
+                                              pill
+                                              color="primary"
+                                              v-for="person in item.personInCharge "
+                                            >
+                                              <v-avatar left>
+                                                <v-icon>mdi-account-circle</v-icon>
+                                              </v-avatar>
+                                              {{ person }}
+                                            </v-chip>
+                                          </template>
+                                          <v-card width="280">
+                                            <v-list>
+                                              <v-list-item>
+                                                <v-list-item-avatar>
+                                                  <v-img src="https://cdn.vuetifyjs.com/images/john.png"></v-img>
+                                                </v-list-item-avatar>
+                                                <v-list-item-content>
+                                                  <v-list-item-title>John Leider</v-list-item-title>
+                                                  <v-list-item-subtitle>john@vuetifyjs.com</v-list-item-subtitle>
+                                                </v-list-item-content>
+                                                <v-list-item-action>
+                                                  <v-btn
+                                                    icon
+                                                    @click="menu = false"
+                                                  >
+                                                    <v-icon>mdi-close-circle</v-icon>
+                                                  </v-btn>
+                                                </v-list-item-action>
+                                              </v-list-item>
+                                            </v-list>
+                                            <v-list>
+                                              <v-list-item @click="() => {}">
+                                                <v-list-item-action>
+                                                  <v-icon>mdi-briefcase</v-icon>
+                                                </v-list-item-action>
+                                                <v-list-item-subtitle>john@gmail.com</v-list-item-subtitle>
+                                              </v-list-item>
+                                            </v-list>
+                                          </v-card>
+                                        </v-menu>
                                       </template>
-                                      <v-card width="280">
-                                        <v-list>
-                                          <v-list-item>
-                                            <v-list-item-avatar>
-                                              <v-img src="https://cdn.vuetifyjs.com/images/john.png"></v-img>
-                                            </v-list-item-avatar>
-                                            <v-list-item-content>
-                                              <v-list-item-title>John Leider</v-list-item-title>
-                                              <v-list-item-subtitle>john@vuetifyjs.com</v-list-item-subtitle>
-                                            </v-list-item-content>
-                                            <v-list-item-action>
-                                              <v-btn
-                                                icon
-                                                @click="menu = false"
-                                              >
-                                                <v-icon>mdi-close-circle</v-icon>
-                                              </v-btn>
-                                            </v-list-item-action>
-                                          </v-list-item>
-                                        </v-list>
-                                        <v-list>
-                                          <v-list-item @click="() => {}">
-                                            <v-list-item-action>
-                                              <v-icon>mdi-briefcase</v-icon>
-                                            </v-list-item-action>
-                                            <v-list-item-subtitle>john@gmail.com</v-list-item-subtitle>
-                                          </v-list-item>
-                                        </v-list>
-                                      </v-card>
-                                    </v-menu>
-                                  </template>
-                                </v-col>
-                              </v-row>
-                              <v-divider></v-divider>
-                              <v-row>
-                                <!--branches-->
-                                <v-col cols="4">
-                                  <h3 style="margin: 15px">
-                                    Branches : <span style="color: #47494e; font-weight: lighter">12</span>
-                                  </h3>
-                                </v-col>
-                                <v-col cols="8" style="margin-top: 15px">
-                                  <v-chip
-                                    class=""
-                                    color="#1A237E"
-                                    outlined
-                                  >
-                                    <v-icon left>
-                                    </v-icon>
-                                    master
-                                  </v-chip>
-                                  <v-chip
-                                    class=""
-                                    color="#1A237E"
-                                    outlined
-                                  >
-                                    <v-icon left>
-                                    </v-icon>
-                                    call-center-chat-add-credit-picture
-                                  </v-chip>
-                                  <v-chip
-                                    class=""
-                                    color="#1A237E"
-                                    outlined
-                                  >
-                                    <v-icon left>
-                                    </v-icon>
-                                    chat-banner
-                                  </v-chip>
-                                  <v-chip
-                                    class=""
-                                    color="#1A237E"
-                                    outlined
-                                  >
-                                    <v-icon left>
-                                    </v-icon>
-                                    call-center-chat-add-credit-picture
-                                  </v-chip>
-                                  <v-chip
-                                    class=""
-                                    color="#1A237E"
-                                    outlined
-                                  >
-                                    <v-icon>
-                                      mdi-dots-horizontal
-                                    </v-icon>
-                                  </v-chip>
-                                </v-col>
-                              </v-row>
-                            </v-card>
-                            <v-card style="margin-top: 30px">
-                              <v-row>
-                                <v-col cols="6">
+                                    </v-col>
+                                  </v-row>
+                                  <v-divider></v-divider>
+                                  <v-row>
+                                    <!--branches-->
+                                    <v-col cols="4">
+                                      <h3 style="margin: 15px">
+                                        Branches : <span style="color: #47494e; font-weight: lighter">12</span>
+                                      </h3>
+                                    </v-col>
+                                    <v-col cols="8" style="margin-top: 15px">
+                                      <v-chip
+                                        class=""
+                                        color="#1A237E"
+                                        outlined
+                                      >
+                                        <v-icon left>
+                                        </v-icon>
+                                        master
+                                      </v-chip>
+                                      <v-chip
+                                        class=""
+                                        color="#1A237E"
+                                        outlined
+                                      >
+                                        <v-icon left>
+                                        </v-icon>
+                                        call-center-chat-add-credit-picture
+                                      </v-chip>
+                                      <v-chip
+                                        class=""
+                                        color="#1A237E"
+                                        outlined
+                                      >
+                                        <v-icon left>
+                                        </v-icon>
+                                        chat-banner
+                                      </v-chip>
+                                      <v-chip
+                                        class=""
+                                        color="#1A237E"
+                                        outlined
+                                      >
+                                        <v-icon left>
+                                        </v-icon>
+                                        call-center-chat-add-credit-picture
+                                      </v-chip>
+                                      <v-chip
+                                        class=""
+                                        color="#1A237E"
+                                        outlined
+                                      >
+                                        <v-icon>
+                                          mdi-dots-horizontal
+                                        </v-icon>
+                                      </v-chip>
+                                    </v-col>
+                                  </v-row>
+                                </v-card>
+                              </v-col>
+                              <v-col cols="12">
+                                <v-card>
                                   <v-card-title>
                                     Environment
                                   </v-card-title>
-                                </v-col>
-                              </v-row>
-                              <v-expansion-panels class="mb-6">
-                                <v-expansion-panel
-                                >
-                                  <v-expansion-panel-header expand-icon="mdi-menu-down"
-                                                            v-for="envitem in item.env"
-                                  >
-                                    <h3>{{ envitem.envname}}</h3>
-                                  </v-expansion-panel-header>
-                                  <v-expansion-panel-content
-                                    v-for="kv in item.env"
-                                  >
-                                    <v-row>
-                                      <v-col cols="6">
-                                        Key : {{ kv.key }}
-                                      </v-col>
-                                      <v-col cols="6">
-                                        Value : {{ kv.value }}
-                                      </v-col>
-                                    </v-row>
-                                  </v-expansion-panel-content>
-                                </v-expansion-panel>
-                              </v-expansion-panels>
-                            </v-card>
-                            <template>
-                              <v-btn
-                                color="green lighten-1"
-                                class="ma-1 white--text"
-                                @click="editItem()"
-                              >
-                                แก้ไข
-                                <v-icon
-                                  right
-                                  dark
-                                >
-                                  mdi-border-color
-                                </v-icon>
-                              </v-btn>
-                              <v-btn
-                                v-model="dialogDelete"
-                                color="red darken-1"
-                                class="ma-1 white--text"
-                                @click="deleteItem(item)"
-                              >
-                                ลบ
-                                <v-icon
-                                  right
-                                  dark
-                                >
-                                  mdi-delete-empty
-                                </v-icon>
-                              </v-btn>
-                              <v-dialog v-model="dialogDelete" max-width="500px">
-                                <v-card>
-                                  <v-card-title class="headline">Are you sure you want to delete this item?
-                                  </v-card-title>
-                                  <v-card-actions>
-                                    <v-spacer></v-spacer>
-                                    <v-btn color="green lighten-1" class="white--text" @click="deleteItemConfirm">OK
-                                    </v-btn>
-                                    <v-btn color="red darken-1" class="white--text" @click="closeDelete">Cancel</v-btn>
-                                    <v-spacer></v-spacer>
-                                  </v-card-actions>
-                                </v-card>
-                              </v-dialog>
-                              <v-dialog
-                                v-model="dialogEdit"
-                                max-width="600"
-                              >
-                                <v-card>
-                                  <v-card-title>
-                                    <span class="headline">Edit Project</span>
-                                  </v-card-title>
-                                  <v-card-text>
-                                    <v-container>
-                                      <v-row>
-                                        <v-col
-                                          cols="12"
+                                  <v-card-text class="px-0">
+                                    <v-expansion-panels class="px-3">
+                                      <v-expansion-panel v-for="env in item.env">
+                                        <v-expansion-panel-header expand-icon="mdi-menu-down"
                                         >
-                                          <v-text-field
-                                            v-model="editedItem.name"
-                                            label="Project Name"
-                                            prepend-icon="mdi-folder"
-                                            required
-                                          ></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12">
-                                          <v-text-field
-                                            label="Git Repository Name"
-                                            prepend-icon="mdi-git"
-                                            required
-                                          ></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12">
-                                          <v-autocomplete
-                                            :items="teamMember"
-                                            prepend-icon="mdi-account"
-                                            attach
-                                            chips
-                                            label="Person in charge"
-                                            multiple
-                                          ></v-autocomplete>
-                                        </v-col>
-                                        <v-col
-                                          cols="12"
-                                        >
-                                          <v-text-field
-                                            label="Environment Type"
-                                            prepend-icon="mdi-nature"
-                                            required
-                                          ></v-text-field>
-                                        </v-col>
-                                        <v-col
-                                          cols="12"
-                                          sm="6"
-                                        >
-                                          <v-text-field
-                                            label="Key"
-                                            prepend-icon="mdi-key"
-                                            required
-                                          ></v-text-field>
-                                        </v-col>
-                                        <v-col
-                                          cols="12"
-                                          sm="6"
-                                        >
-                                          <v-text-field
-                                            label="Value"
-                                            prepend-icon="mdi-server-security"
-                                            required
-                                          ></v-text-field>
-                                        </v-col>
-                                      </v-row>
-                                    </v-container>
+                                          <h3>{{ env.envname }}</h3>
+                                        </v-expansion-panel-header>
+                                        <v-expansion-panel-content>
+                                          <v-list>
+                                            .
+                                            <v-row v-for="envItem in env.items">
+                                              <v-col cols="5">
+                                                <v-list-item>
+                                                  <v-text-field label="Key" v-model="envItem.key" v-if="envItem.isEditing"></v-text-field>
+                                                  <v-list-item-title v-else>Key : {{ envItem.key }}</v-list-item-title>
+                                                </v-list-item>
+                                              </v-col>
+                                              <v-col cols="5">
+                                                <v-list-item>
+                                                  <v-text-field label="Value" v-model="envItem.value" v-if="envItem.isEditing"></v-text-field>
+                                                  <v-list-item-title v-else>Value : {{ envItem.value }}</v-list-item-title>
+                                                </v-list-item>
+                                              </v-col>
+                                              <v-col cols="2">
+                                                <v-btn
+                                                  @click="editEnvItem(envItem)"
+                                                  class="mx-2"
+                                                  fab
+                                                  dark
+                                                  small
+                                                  color="primary"
+                                                >
+                                                  <v-icon dark>
+                                                    {{ envItem.isEditing ? 'mdi-checkbox-marked' : 'mdi-pencil' }}
+                                                  </v-icon>
+                                                </v-btn>
+                                                <v-btn
+                                                  @click="deleteEnvItem(envItem, env.items)"
+                                                  class="mx-2"
+                                                  fab
+                                                  dark
+                                                  small
+                                                  color="red"
+                                                >
+                                                  <v-icon dark>
+                                                    mdi-delete
+                                                  </v-icon>
+                                                </v-btn>
+                                              </v-col>
+                                            </v-row>
+                                          </v-list>
+                                        </v-expansion-panel-content>
+
+                                        <!--                                  <v-expansion-panel-content-->
+                                        <!--                                    v-for="kv in envitem"-->
+                                        <!--                                  >-->
+                                        <!--                                    <v-row>-->
+                                        <!--                                      <v-col cols="6">-->
+                                        <!--                                        Key : {{ kv.key }}-->
+                                        <!--                                      </v-col>-->
+                                        <!--                                      <v-col cols="6">-->
+                                        <!--                                        Value : {{ kv.value }}-->
+                                        <!--                                      </v-col>-->
+                                        <!--                                    </v-row>-->
+                                        <!--                                  </v-expansion-panel-content>-->
+                                      </v-expansion-panel>
+                                    </v-expansion-panels>
                                   </v-card-text>
-                                  <v-card-actions>
-                                    <v-spacer></v-spacer>
-                                    <v-btn
-                                      color="green darken-1"
-                                      text
-                                      @click="dialog = false"
-                                    >
-                                      Add
-                                    </v-btn>
-                                    <v-btn
-                                      color="red darken-2"
-                                      text
-                                      @click="dialog = false"
-                                    >
-                                      Cancle
-                                    </v-btn>
-                                  </v-card-actions>
                                 </v-card>
-                              </v-dialog>
-                            </template>
+                              </v-col>
+                              <v-col cols="12">
+                                <template>
+                                  <!--                           editItem(item) <-- item ที่ส่งไปหลังจากกดคือ ของที่อยุ่ในไหนกัน   -->
+                                  <v-btn
+                                    color="green lighten-1"
+                                    class="ma-1 white--text"
+                                    @click="editItem(item)"
+
+                                  >
+                                    แก้ไข
+                                    <v-icon
+                                      right
+                                      dark
+                                    >
+                                      mdi-border-color
+                                    </v-icon>
+                                  </v-btn>
+                                  <v-btn
+                                    v-model="dialogDelete"
+                                    color="red darken-1"
+                                    class="ma-1 white--text"
+                                    @click="deleteItem(item)"
+                                  >
+                                    ลบ
+                                    <v-icon
+                                      right
+                                      dark
+                                    >
+                                      mdi-delete-empty
+                                    </v-icon>
+                                  </v-btn>
+                                  <v-dialog v-model="dialogDelete" max-width="500px">
+                                    <v-card>
+                                      <v-card-title class="headline">Are you sure you want to delete this item?
+                                      </v-card-title>
+                                      <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="green lighten-1" class="white--text" @click="deleteItemConfirm">OK
+                                        </v-btn>
+                                        <v-btn color="red darken-1" class="white--text" @click="closeDelete">Cancel</v-btn>
+                                        <v-spacer></v-spacer>
+                                      </v-card-actions>
+                                    </v-card>
+                                  </v-dialog>
+                                  <v-dialog
+                                    v-model="dialogEdit"
+                                    max-width="600"
+
+                                  >
+                                    <v-card>
+                                      <v-card-title>
+                                        <span class="headline">Edit Project</span>
+                                      </v-card-title>
+                                      <v-card-text>
+                                        <v-container>
+                                          <v-row>
+                                            <v-col
+                                              cols="12"
+                                            >
+                                              <v-text-field
+                                                v-model="editedItem.productName"
+                                                label="Project Name"
+                                                prepend-icon="mdi-folder"
+                                                required
+                                              ></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12">
+                                              <v-text-field
+                                                v-model="editedItem.remoteName"
+                                                label="Git Repository Name"
+                                                prepend-icon="mdi-git"
+                                                required
+                                              ></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12">
+                                              <v-autocomplete
+                                                v-model="editedItem.personInCharge"
+                                                :items="teamMember"
+                                                prepend-icon="mdi-account"
+                                                attach
+                                                chips
+                                                label="Person in charge"
+                                                multiple
+                                              ></v-autocomplete>
+                                            </v-col>
+                                            <v-col
+                                              cols="12"
+                                            >
+                                              <!--                                          ต้องวนยังไงให้ Env แยก name val kay-->
+                                              <v-text-field
+                                                v-model="editedItem.env"
+                                                label="Environment Type"
+                                                prepend-icon="mdi-nature"
+                                                required
+                                              ></v-text-field>
+                                            </v-col>
+                                            <v-col
+                                              cols="12"
+                                              sm="6"
+                                            >
+                                              <v-text-field
+                                                label="Key"
+                                                prepend-icon="mdi-key"
+                                                required
+                                              ></v-text-field>
+                                            </v-col>
+                                            <v-col
+                                              cols="12"
+                                              sm="6"
+                                            >
+                                              <v-text-field
+                                                label="Value"
+                                                prepend-icon="mdi-server-security"
+                                                required
+                                              ></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" style="justify-items: center; align-items: center;">
+                                              <v-btn
+                                                @click="addEnvField()"
+                                                depressed
+                                                color="primary"
+                                              >
+                                                เพิ่ม Environment
+                                              </v-btn>
+                                            </v-col>
+                                            <v-col
+                                              cols="12"
+                                            >
+                                              <v-select
+                                                v-model="value"
+                                                :items="items"
+                                                filled
+                                                chips
+                                                label="Chips"
+                                                multiple
+                                              ></v-select>
+                                            </v-col>
+                                            <v-col
+                                              cols="6"
+                                            >
+                                              <v-text-field
+                                                dense
+                                                label="Regular"
+                                              ></v-text-field>
+                                            </v-col>
+                                            <v-col
+                                              cols="6"
+                                            >
+                                              <v-text-field
+                                                dense
+                                                label="Regular"
+                                              ></v-text-field>
+                                            </v-col>
+                                          </v-row>
+                                        </v-container>
+                                      </v-card-text>
+                                      <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn
+                                          color="green darken-1"
+                                          text
+                                          @click="confirmEdit(edittem)"
+                                        >
+                                          ยืนยัน
+                                        </v-btn>
+                                        <v-btn
+                                          color="red darken-2"
+                                          text
+                                          @click="cancelEdit()"
+                                        >
+                                          Cancle
+                                        </v-btn>
+                                      </v-card-actions>
+                                    </v-card>
+                                  </v-dialog>
+                                </template>
+                              </v-col>
+                            </v-row>
+
+
+
+
+
+
                           </v-container>
 
                         </template>
@@ -580,6 +698,14 @@ import AddProject from "@/components/AddProject";
 export default {
   data() {
     return {
+      // dialogSave : false,
+      addProjectName: '',
+      addDetail: '',
+      addKey: '',
+      addValue: '',
+      addMember: '',
+      addGitRepo: '',
+      addEnv: '',
       dialogDelete: false,
       itemsPerPageArray: [10, 15, 20],
       search: '',
@@ -589,6 +715,8 @@ export default {
       itemsPerPage: 10,
       sortBy: 'name',
       attrs: "",
+      isEditing: false,
+
       keys: [
         'Name',
         'CreatedBy',
@@ -628,79 +756,109 @@ export default {
         },
       ],
       dialogAdd: false,
+      //save func <-- is in side dialogAdd
       dialogEdit: false,
       newItem: [],
       editedIndex: -1,
+      edit: [],
       editedItem: {
         productName: '',
         remoteName: '',
         gitUrl: '',
         personInCharge: '',
         detail: '',
-        env:[]
+        env: []
       },
-      defaultItem: {
-        productName: '',
-        remoteName: '',
-        gitUrl: '',
-        personInCharge: '',
-        detail: '',
-        env:[]
-      },
+      // defaultItem: {
+      //   productName: '',
+      //   remoteName: '',
+      //   gitUrl: '',
+      //   personInCharge: '',
+      //   detail: '',
+      //   env:[]
+      // },
       teamMember: ["firth", "Elon", "Bill", "Jeff", "Steve"],
-      testtest: [{
-        productName: 'customer-search',
-        remoteName: " zipzoft / mepo",
-        gitUrl: 'https://github.com/zipzoft/mepo',
-        personInCharge: ["firth", "Elon", "Bill", "Steve"],
-        detail: "A pilot from Grand Rapids is delighted when she gets the chance to take part in the final of a dancing competition.",
-        env:[{
-          envname: "Staging",
-          key: ["III", "PPP", "MMM"],
-          value: ["three NYC",],
-        }]
-      }, {
-        productName: 'rename-menu\n',
-        remoteName: " zipzoft / mepo",
-        gitUrl: 'https://github.com/zipzoft/mepo',
-        personInCharge: ["jennie", "jisoo", "rose", "lisa"],
-        detail: "The hero is a goblin from Russia who has a particular interest in breakfast. The nemesis is a goblin who eats too much. It turns out the hero and the nemesis are twins.",
-        env:[{
-          envname: "Production",
-          key: ["ABBC", "WWW", "JAKK"],
-          value: ["onw two three",],
-        }],
+      allDetail: [
+        {
+          productName: 'customer-search',
+          remoteName: " zipzoft / mepo",
+          gitUrl: 'https://github.com/zipzoft/mepo',
+          personInCharge: ["firth", "Elon", "Bill", "Steve"],
+          detail: "A pilot from Grand Rapids is delighted when she gets the chance to take part in the final of a dancing competition.",
+          env: [
+            {
+              envname: "Staging",
+              items: [
+                {
+                  id: 1,
+                  key: "YYY",
+                  value: "three NYC",
+                  isEditing: false,
+                },
+                {
+                  id: 2,
+                  key: "ssss",
+                  value: "ssss",
+                  isEditing: false,
+                },
+              ],
+            },
+            {
+              envname: "Project 51",
+              items: [
+                {
+                  id: 3,
+                  key: "AAA",
+                  value: "1234 B NYC",
+                  isEditing: false,
+                },
+              ],
+            }
+          ]
+        },
+        {
+          productName: 'rename-menu',
+          remoteName: " zipzoft / mepo",
+          gitUrl: 'https://github.com/zipzoft/mepo',
+          personInCharge: ["jennie", "jisoo", "rose", "lisa"],
+          detail: "The hero is a goblin from Russia who has a particular interest in breakfast. The nemesis is a goblin who eats too much. It turns out the hero and the nemesis are twins.",
+          env: [{
+            envname: "Production",
+            key: ["ABBC"],
+            value: ["onw two three",],
+          }],
 
-      },
+        },
         {
           productName: 'chat-banner',
           remoteName: " zipzoft / carry",
           gitUrl: 'https://github.com/zipzoft/mepo',
           personInCharge: ["mozart", "bach", "beethoven", "chopin"],
           detail: "In a world where vampires are starving, one nurse has no choice but to protect mankind by eating his own child. It turns out that the nurse is an android.",
-          env:[{
+          env: [{
             envname: "Production",
-            key: "AB BC ABCD",
-            value: "123456789",
+            key: "A",
+            value: "1",
           }]
         },
       ],
       items: [{
         name: "Production",
-        key: "AB BC ABCD",
-        value: "123456789",
+        key: "B",
+        value: "9",
         detail: "A pilot from Grand Rapids is delighted when she gets the chance to take part in the final of a dancing competition. However, her chances are scuppered when her daughter goes missing. Distraught at losing a dancing competition, the pilot kills herself.",
       },
         {
           name: "Staging",
           key: "KITTY KITTYKAT",
-          value: "1212312121",
+          value: "1",
           detail: "When a fairy from Darwin decides to become a fugitive, not everybody is supportive. However, her fortunes improve when her gardener finds a magic knitting needle. It turns out they were teddy bears all along.",
         }],
     }
+
   },
   computed: {
-    numberOfPages () {
+    numberOfPages() {
       return Math.ceil(this.items.length / this.itemsPerPage)
     },
     // formTitle () {
@@ -708,6 +866,39 @@ export default {
     // },
   },
   methods: {
+    deleteEnvItem(envItem, env) {
+      // let index = env.indexOf(envItem)
+
+      let index = env.findIndex(({id})=>{
+        return id === envItem.id
+      })
+
+      // let index = null;
+      // let i = 0;
+      // for(i = 0; i < env.length; i++){
+      //   if(env[i].id === envItem.id){
+      //     index = i;
+      //   }
+      // }
+
+      if(index){
+        env.splice(index, 1)
+      }
+
+      // call api send id & search or get response -> set evn items
+    },
+    editEnvItem(evnItem) {
+      if(evnItem){
+        if(evnItem.isEditing){
+          // save
+          evnItem.isEditing = false
+
+        }else{
+          // change ui to edit mode
+          evnItem.isEditing = true
+        }
+      }
+    },
     nextPage() {
       if (this.page + 1 <= this.numberOfPages) this.page += 1
     },
@@ -717,31 +908,78 @@ export default {
     updateItemsPerPage(number) {
       this.itemsPerPage = number
     },
-    deleteItemConfirm () {
-      this.testtest.splice(this.editedIndex, 1)
-      console.log(this.editedIndex, this.testtest)
+    deleteItemConfirm() {
+      this.allDetail.splice(this.editedIndex, 1)
       this.closeDelete()
     },
-    closeDelete(){
+    closeDelete() {
       this.dialogDelete = false
     },
     deleteItem(item) {
-      this.editedIndex = this.testtest.indexOf(item)
+      this.editedIndex = this.allDetail.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialogDelete = true
     },
+    cancelEdit() {
+      this.dialogEdit = false
+    },
     save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.newItem[this.editedIndex], this.editedItem)
-      } else {
-        this.newItem.push(this.editedItem)
+      this.newItem = {
+        productName: this.addProjectName,
+        remoteName: this.addGitRepo,
+        gitUrl: 'https://github.com/zipzoft/mepo',
+        personInCharge: this.addMember,
+        detail: this.addDetail,
+        env: [{
+          envname: this.addEnv,
+          key: this.addKey,
+          value: this.addValue,
+        }]
       }
-      this.close()
+      if (this.editedIndex > -1) {
+        // Object.assign({this.allDetail},this.newItem)
+        Object.assign(this.allDetail, this.newItem)
+      } else {
+        this.allDetail.push(this.newItem)
+      }
+      //close dialog
+      this.closeDelete()
+      // this.close()
+      this.dialogAdd = false
     },
     editItem(item) {
       this.editedIndex = this.newItem.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialogEdit = true
+    },
+    addEnvField() {
+      //  push field
+    },
+    confirmEdit(editItem) {
+      this.dialogEdit = false
+      // editItem =
+      this.edit = {
+        productName: editItem,
+        remoteName: editItem,
+        gitUrl: 'https://github.com/zipzoft/mepo',
+        personInCharge: editItem,
+        detail: editItem,
+        env: [{
+          envname: editItem,
+          key: editItem,
+          value: editItem,
+        }]
+      }
+      if (this.editedIndex > -1) {
+        // Object.assign({this.allDetail},this.newItem)
+        Object.assign(this.allDetail, this.edit)
+      } else {
+        this.allDetail.push(this.newItem)
+      }
+      //close dialog
+      this.closeDelete()
+      // this.close()
+      this.dialogEdit = false
     },
   },
   components: {

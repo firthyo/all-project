@@ -249,7 +249,6 @@
 
                 <v-col
                   v-for="item in props.items"
-                  :key="item.name"
                   cols="12"
                   sm="6"
                   md="4"
@@ -257,7 +256,7 @@
                 >
                   <v-card>
                     <v-card-title class="subheading font-weight-bold">
-                      <a href="./detail" style="color: #47494e">{{ item.name }}</a>
+                      {{item}}
                     </v-card-title>
 
                     <v-divider></v-divider>
@@ -274,9 +273,16 @@
                           class="align-end"
                           :class="{ 'blue--text': sortBy === key }"
                         >
-                          Firth
-                          {{ items.createdBy }}
-                          {{ items[key.toLowerCase()] }}
+                              <v-btn
+                                depressed
+                                color="primary"
+                                @click="openDetail(item)"
+                              >
+                                รายละเอียด
+                              </v-btn>
+<!--                          this.$router.push-->
+<!--                          {{ items.createdBy }}-->
+<!--                          {{ items[key.toLowerCase()] }}-->
                         </v-list-item-content>
                       </v-list-item>
                     </v-list>
@@ -361,7 +367,10 @@ import AddProject from "@/components/AddProject";
 
 export default {
   data() {
+
     return {
+      value:"",
+      card:'',
       itemsPerPageArray: [10, 15, 20],
       search: '',
       filter: {},
@@ -375,112 +384,78 @@ export default {
       ],
       items: [
         {
-          name: 'System True-Wallet',
+          id:"1",
+          name: 'System',
           createdBy: '123',
         },
         {
-          name: 'System True-Wallet1',
+          id:"2",
+          name: '123',
           CreatedBy: '123',
 
         },
         {
-          name: 'System True-Wallet2',
+          id:"3",
+          name: 'Syst333',
 
         },
         {
-          name: 'System True-Wallet3',
+          id:"4",
+          name: 'S4',
         },
         {
-          name: 'System True-Wallet4',
+          id:"5",
+          name: 'Sys5',
 
 
         },
         {
+          id:"6",
           name: 'System True-Wallet6',
 
         },
         {
-          name: 'System True-Wallet7',
+          id:"7",
+          name: 'mepo2',
 
         },
         {
-          name: 'Honeycomb',
+          id:"8",
+          name: 'mepo1',
 
         },
         {
-          name: 'Donut',
+          id:"9",
+          name: 'menu',
 
         },
         {
-          name: 'KitKat',
+          id:"10",
+          name: 'System True Wallets',
         },
         {
+          id:"11",
           name: 'System True-Wallet2',
 
         },
         {
+          id:"12",
           name: 'System True-Wallet3',
         },
         {
+          id:"13",
           name: 'System True-Wallet4',
 
-
         },
-        {
-          name: 'System True-Wallet6',
-
-        },
-        {
-          name: 'System True-Wallet7',
-
-        },
-        {
-          name: 'System True-Wallet2',
-
-        },
-        {
-          name: 'System True-Wallet3',
-        },
-        {
-          name: 'System True-Wallet4',
-
-
-        },
-        {
-          name: 'System True-Wallet6',
-
-        },
-        {
-          name: 'System True-Wallet7',
-
-        },
-        {
-          name: 'System True-Wallet2',
-
-        },
-        {
-          name: 'System True-Wallet3',
-        },
-        {
-          name: 'System True-Wallet4',
-
-
-        },
-        {
-          name: 'System True-Wallet6',
-
-        },
-        {
-          name: 'System True-Wallet7',
-
-        }
       ],
       dialogAdd: false,
       dialogEdit: false,
       teamMember:["firth","Elon","Bill","Jeff","Steve"],
     }
   },
+
   computed: {
+
     numberOfPages() {
       return Math.ceil(this.items.length / this.itemsPerPage)
     },
@@ -489,6 +464,9 @@ export default {
     },
   },
   methods: {
+    openDetail(item) {
+      this.$router.push({ path: '/datadetail', query: { id: item.id } })
+    },
     nextPage() {
       if (this.page + 1 <= this.numberOfPages) this.page += 1
     },
