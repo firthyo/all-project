@@ -80,8 +80,9 @@
             <!--            </div>-->
           </v-card>
         </v-tab-item>
-        <v-tabs-items v-for="x in data">
-          {{x}}
+        <v-tabs-items v-for="(sss,index) in data" :key="index">
+<!--          <h3>{{sss.remoteName}}</h3>-->
+<!--          {{data}}-->
         </v-tabs-items>
       </v-tabs-items>
     </v-container>

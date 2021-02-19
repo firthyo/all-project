@@ -462,10 +462,20 @@ export default {
     filteredKeys() {
       return this.keys.filter(key => key !== 'Name')
     },
+
+  },
+  mounted() {
+    this.fetchAllData()
   },
   methods: {
+    fetchAllData(){
+      this.$axios.get(`http://localhost:80/api/alldata/${this.selectedCardId}`).then((dataResult)=>{
+        this.data = dataResult
+      }).catch((err)=>{
+      })
+    },
     openDetail(item) {
-      this.$router.push({ path: '/moreDetail', query: { id: item.id } })
+      this.$router.push({ path: `/project/${item.id}`})
     },
     nextPage() {
       if (this.page + 1 <= this.numberOfPages) this.page += 1
