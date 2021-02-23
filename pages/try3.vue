@@ -672,6 +672,7 @@ import AddProject from "@/components/AddProject";
 export default {
   data() {
     return {
+      value:'',
       // dialogSave : false,
       addProjectName : '',
       addDetail : '',

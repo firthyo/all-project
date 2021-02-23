@@ -90,8 +90,8 @@
                         <!-- ADD-->
                         <!--*********************-->
                         <v-btn
-                          color="blue-grey"
-                          class="white--text"
+                          color="success"
+                          class="white--text ma-1"
                           @click.stop="dialogAdd = true"
                         >
                           เพิ่ม
@@ -111,25 +111,47 @@
                                     cols="12"
                                   >
                                     <v-text-field
+                                      v-model="projectName"
                                       label="Project Name"
                                       prepend-icon="mdi-folder"
                                       required
                                     ></v-text-field>
                                   </v-col>
+                                  <v-col
+                                    cols="12"
+                                  >
+                                    <v-text-field
+                                      v-model="description"
+                                      label="Description"
+                                      prepend-icon="mdi-note-text"
+                                      required
+                                    ></v-text-field>
+                                  </v-col>
                                   <v-col cols="12">
                                     <v-text-field
+                                      v-model="remoteName"
                                       label="Git Repository Name"
                                       prepend-icon="mdi-git"
                                       required
                                     ></v-text-field>
                                   </v-col>
                                   <v-col cols="12">
+                                    <v-text-field
+                                      v-model="gitUrl"
+                                      label="Git Url"
+
+                                      prepend-icon="mdi-link-variant"
+                                      required
+                                    ></v-text-field>
+                                  </v-col>
+                                  <v-col cols="12">
                                     <v-autocomplete
-                                      v-model="value"
+                                      v-model="personInCharge"
                                       :items="teamMember"
                                       prepend-icon="mdi-account"
                                       attach
                                       chips
+                                      :menu-props="{ top: true, offsetY: true }"
                                       label="Person in charge"
                                       multiple
                                     ></v-autocomplete>
@@ -138,6 +160,7 @@
                                     cols="12"
                                   >
                                     <v-text-field
+                                      v-model="envName"
                                       label="Environment Type"
                                       prepend-icon="mdi-nature"
                                       required
@@ -148,6 +171,7 @@
                                     sm="6"
                                   >
                                     <v-text-field
+                                      v-model="envKey"
                                       label="Key"
                                       prepend-icon="mdi-key"
                                       required
@@ -158,6 +182,7 @@
                                     sm="6"
                                   >
                                     <v-text-field
+                                      v-model="envValue"
                                       label="Value"
                                       prepend-icon="mdi-server-security"
                                       required
@@ -171,74 +196,21 @@
                               <v-btn
                                 color="green darken-1"
                                 text
-                                @click="dialog = false"
+                                @click="addNewProject()"
                               >
-                                Add
+                                ตกลง
                               </v-btn>
                               <v-btn
                                 color="red darken-2"
                                 text
-                                @click="dialog = false"
+
+                                @click="dialogAdd = false"
                               >
-                                Cancle
+                                ยกเลิก
                               </v-btn>
                             </v-card-actions>
                           </v-card>
                         </v-dialog>
-                        <!--*********************-->
-                        <!-- EDIT-->
-                        <!--*********************-->
-                        <v-btn
-                          color="blue-grey"
-                          class="mx-1 white--text"
-                          @click.stop="dialogEdit = true"
-                        >
-                          แก้ไข
-                        </v-btn>
-                        <v-dialog
-                          v-model="dialogEdit"
-                          max-width="290"
-                        >
-                          <v-card>
-                            <v-card-title class="headline">
-                              Use Google's location service?
-                            </v-card-title>
-
-                            <v-card-text>
-                              Let Google help apps determine location. This means sending anonymous location data to
-                              Google, even when no apps are running.
-                            </v-card-text>
-
-                            <v-card-actions>
-                              <v-spacer></v-spacer>
-
-                              <v-btn
-                                color="green darken-1"
-                                text
-                                @click="dialog = false"
-                              >
-                                Disagree
-                              </v-btn>
-
-                              <v-btn
-                                color="green darken-1"
-                                text
-                                @click="dialog = false"
-                              >
-                                Agree
-                              </v-btn>
-                            </v-card-actions>
-                          </v-card>
-                        </v-dialog>
-                        <!--*********************-->
-                        <!-- DELETE-->
-                        <!--*********************-->
-                        <v-btn
-                          color="blue-grey"
-                          class="white--text"
-                        >
-                          ลบ
-                        </v-btn>
                       </v-row>
                     </template>
 
@@ -248,7 +220,7 @@
                 </v-col>
 
                 <v-col
-                  v-for="item in props.items"
+                  v-for="data in allData"
                   cols="12"
                   sm="6"
                   md="4"
@@ -256,7 +228,8 @@
                 >
                   <v-card>
                     <v-card-title class="subheading font-weight-bold">
-                      {{item}}
+                      {{ data.ProjectName }}
+                      <!--                      {{data}}-->
                     </v-card-title>
 
                     <v-divider></v-divider>
@@ -273,16 +246,34 @@
                           class="align-end"
                           :class="{ 'blue--text': sortBy === key }"
                         >
+                          <v-row>
+                            <v-col cols="6">
                               <v-btn
                                 depressed
                                 color="primary"
-                                @click="openDetail(item)"
+                                @click="openDetail(data)"
                               >
                                 รายละเอียด
+                                <!--                                {{allData}}-->
                               </v-btn>
-<!--                          this.$router.push-->
-<!--                          {{ items.createdBy }}-->
-<!--                          {{ items[key.toLowerCase()] }}-->
+                            </v-col>
+                            <v-col cols="6">
+                              <v-btn
+                                depressed
+                                color="red"
+                                class="white--text"
+                                @click="deleteItem(data._id)"
+                              >
+                                ลบ
+                                <!--                                {{allData}}-->
+                              </v-btn>
+                            </v-col>
+                          </v-row>
+
+
+                          <!--                          this.$router.push-->
+                          <!--                          {{ items.createdBy }}-->
+                          <!--                          {{ items[key.toLowerCase()] }}-->
                         </v-list-item-content>
                       </v-list-item>
                     </v-list>
@@ -367,10 +358,8 @@ import AddProject from "@/components/AddProject";
 
 export default {
   data() {
-
     return {
-      value:"",
-      card:'',
+      card: '',
       itemsPerPageArray: [10, 15, 20],
       search: '',
       filter: {},
@@ -382,80 +371,98 @@ export default {
         'Name',
         'CreatedBy',
       ],
+      allData: [],
       items: [
         {
-          id:"1",
+          id: "1",
           name: 'System',
           createdBy: '123',
         },
         {
-          id:"2",
+          id: "2",
           name: '123',
           CreatedBy: '123',
 
         },
         {
-          id:"3",
+          id: "3",
           name: 'Syst333',
 
         },
         {
-          id:"4",
+          id: "4",
           name: 'S4',
         },
         {
-          id:"5",
+          id: "5",
           name: 'Sys5',
 
 
         },
         {
-          id:"6",
+          id: "6",
           name: 'System True-Wallet6',
 
         },
         {
-          id:"7",
+          id: "7",
           name: 'mepo2',
 
         },
         {
-          id:"8",
+          id: "8",
           name: 'mepo1',
 
         },
         {
-          id:"9",
+          id: "9",
           name: 'menu',
 
         },
         {
-          id:"10",
+          id: "10",
           name: 'System True Wallets',
         },
         {
-          id:"11",
+          id: "11",
           name: 'System True-Wallet2',
 
         },
         {
-          id:"12",
+          id: "12",
           name: 'System True-Wallet3',
         },
         {
-          id:"13",
+          id: "13",
           name: 'System True-Wallet4',
 
         },
       ],
       dialogAdd: false,
       dialogEdit: false,
-      teamMember:["firth","Elon","Bill","Jeff","Steve"],
+      dialogCancleAdd: false,
+      teamMember: ["firth", "Elon", "Bill", "Jeff", "Steve"],
+      projectName: null,
+      gitUrl: null,
+      remoteName: null,
+      personInCharge: [],
+      description: null,
+      envName : null,
+      envKey : null,
+      envValue:null,
+      env: [{
+        name:'',
+        itemEnv:[
+          {
+            key:'',
+            value:''
+          }
+        ]
+      }],
     }
   },
 
   computed: {
-
     numberOfPages() {
       return Math.ceil(this.items.length / this.itemsPerPage)
     },
@@ -468,14 +475,63 @@ export default {
     this.fetchAllData()
   },
   methods: {
-    fetchAllData(){
-      this.$axios.get(`http://localhost:80/api/alldata/${this.selectedCardId}`).then((dataResult)=>{
-        this.data = dataResult
-      }).catch((err)=>{
+    addNewProject() {
+      console.log('hi')
+      this.$axios.post(`http://localhost/api/alldata`, {
+        ProjectName: this.projectName,
+        gitUrl: this.gitUrl,
+        remoteName: this.remoteName,
+        personInCharge: this.personInCharge,
+        env : {
+          name : this.envName,
+          itemEnv: {
+            key: this.envKey,
+            value: this.envValue,
+          }
+        }
       })
+        .then(({data}) => {
+          // this.allData = data
+          this.fetchAllData()
+          console.log(data)
+        })
+        .catch((error) => console.error(error))
+        .finally(() => this.dialogAdd = false)
     },
-    openDetail(item) {
-      this.$router.push({ path: `/project/${item.id}`})
+    // fetchAllData(){
+    //   this.$axios.get(`http://localhost:80/api/alldata/${this.selectedCardId}`).then((dataResult)=>{
+    //     this.data = dataResult
+    //   }).catch((err)=>{
+    //     (err)
+    //   })
+    // },
+    fetchAllData() {
+      this.$axios.get(`http://localhost/api/alldata`)
+        .then(({data}) => {
+          this.allData = data
+        })
+    },
+
+    deleteItem(projectId) {
+      this.$axios.delete(`http://localhost/api/delete/${projectId}`)
+        .then(({data}) => {
+          this.fetchAllData()
+        })
+
+      // app.delete('/api/delete/:id', (req, res) => {
+      //   const projectId = req.params.id
+      //   Alldata.remove({_id: projectId}, (err, deleteResult) => {
+      //     if (err) {
+      //       res.send(err.message)
+      //     } else {
+      //       res.json(deleteResult)
+      //     }
+      //   })
+      // })
+    },
+
+    openDetail(data) {
+      this.$router.push({path: `/project/moreDetail?id=${data._id}`})
     },
     nextPage() {
       if (this.page + 1 <= this.numberOfPages) this.page += 1
