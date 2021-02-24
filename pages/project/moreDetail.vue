@@ -1,9 +1,16 @@
 <template>
   <v-card color="basil">
     <v-card-title class="py-6" style="flex-wrap: wrap">
-      <div>
-        <span class="font-weight-bold display-1 basil--text">
-        {{ dataItem ? dataItem.ProjectName : '' }}
+      <div v-if="dataItem">
+        <span v-model="dataItem.ProjectName" class="font-weight-light display-1 basil--text">
+<!--        {{ dataItem ? dataItem.ProjectName : '' }}-->
+          Project Name : {{dataItem.ProjectName}}
+<!--          {{dataItem.projectName}}-->
+<!--           <v-text-field-->
+<!--             v-if="isEditing"-->
+<!--             v-model="dataItem.ProjectName"-->
+<!--             label="Project Name"-->
+<!--           ></v-text-field>-->
       </span>
       </div>
       <div style="flex-basis: 100%"></div>
@@ -50,7 +57,7 @@
               <v-autocomplete
                 v-if="isEditing"
                 v-model="dataItem.personInCharge"
-                :items="dataItem.personInCharge"
+                :items="teamMember"
                 attach
                 chips
                 :menu-props="{ top: true, offsetY: true }"
@@ -81,22 +88,33 @@
         <v-container>
           <h2>Environment</h2>
           <div>
-            <strong v-if="!isEditing">Environment Name : {{ env.name }}</strong>
+            <strong class="pt-1" v-if="!isEditing">Env Name : {{ env.name }}</strong>
             <v-text-field
               v-if="isEditing"
-              :value="env.name"
-              label="Environment Name"
+              v-model="env.name"
+              label="Name"
             ></v-text-field>
 
           </div>
-          <v-divider></v-divider>
-          <strong> Key :{{ env.itemEnv.key }}</strong>
-          <v-divider></v-divider>
-          <strong> Value :{{ env.itemEnv.value }}</strong>
+          <strong v-if="!isEditing"> Key :{{ env.itemEnv.key }}</strong>
+          <v-spacer></v-spacer>
+          <v-text-field
+            v-if="isEditing"
+            v-model="env.itemEnv.key"
+            label="key"
+          ></v-text-field>
+          <strong v-if="!isEditing"> Value :{{ env.itemEnv.value }}</strong>
+          <v-text-field
+            v-if="isEditing"
+            :value="env.itemEnv.value"
+            label="value"
+          ></v-text-field>
         </v-container>
       </v-card>
       <div align="center">
-        <v-btn class="ma-4" color="primary" @click="editAllItem">แก้ไข</v-btn>
+        <v-btn class="ma-4 " color="primary" @click="editAllItem" v-if="!cancleEditing">แก้ไข</v-btn>
+        <v-btn class="ma-4" color="error" v-if="cancleEditing" @click="cancleEdit">ยกเลิก</v-btn>
+
         <!--        save ควรอยู่ปุ่มเดียวกับแก้ไข-->
         <v-btn class="ma-4" color="primary" @click="save">บันทึก</v-btn>
       </div>
@@ -107,11 +125,14 @@
 export default {
   data() {
     return {
+      teamMember: ["firth", "Elon", "Bill", "Jeff", "Steve"],
       selectedCardId: null,
       tab: null,
       data: null,
       dataItem: null,
       isEditing: false,
+      cancleEditing: false,
+      //not cancle
       newItem: [],
     }
   },
@@ -122,24 +143,46 @@ export default {
   },
 
   methods: {
+    cancleEdit(){
+      this.cancleEditing = false
+      this.isEditing = false
+    },
     save() {
       // if(this.isEditing = true){
+
       this.$axios.patch(`http://localhost:80/api/edit/alldata/${this.selectedCardId}`,
         {
-          ProjectName : this.dataItem.projectName,
+          ProjectName: this.dataItem.projectName,
+          gitUrl: this.dataItem.gitUrl,
+          description: this.dataItem.description,
+          remoteName: this.dataItem.remoteName,
 
+
+          personInCharge: this.dataItem.personInCharge,
+          env :this.env,
+          // env:{
+          //   name:this.dataItem.env.name,
+          //   itemEnv: {
+          //     key : this.dataItem.env.key,
+          //     value : this.dataItem.env.value,
+          //   }
+          // }
         }
-      )
-
-        .then(({data}) => {
-          this.dataItem = data
-        })
-
+      ).then(({data}) => {
+        console.log(data)
+        this.dataItem = data
+        this.isEditing = false
+        this.cancleEditing = false
+        // this.isCancle = true
+      }).finally((data) => {
+        console.log(data)
+        this.fetch()
+      })
     },
     editAllItem() {
+      this.cancleEditing =true
       this.$axios.get(`http://localhost:80/api/alldata/`)
         .then(({data}) => {
-
         })
       this.isEditing = true
 
@@ -155,6 +198,7 @@ export default {
     fetch() {
       // this.$axios.$get('localhost/api/alldata').then((dataResult)=>{
       this.$axios.get(`http://localhost:80/api/alldata/${this.selectedCardId}`).then(({data}) => {
+
         this.dataItem = data
         // console.log(data)
       }).catch((err) => {
