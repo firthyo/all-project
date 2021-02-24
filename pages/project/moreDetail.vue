@@ -96,17 +96,17 @@
             ></v-text-field>
 
           </div>
-          <strong v-if="!isEditing"> Key :{{ env.itemEnv.key }}</strong>
+          <strong v-if="!isEditing"> Key :{{ env.itemEnv ? env.itemEnv.key : ''  }}</strong>
           <v-spacer></v-spacer>
           <v-text-field
-            v-if="isEditing"
+            v-if="isEditing && env.itemEnv"
             v-model="env.itemEnv.key"
             label="key"
           ></v-text-field>
-          <strong v-if="!isEditing"> Value :{{ env.itemEnv.value }}</strong>
+          <strong v-if="!isEditing"> Value :{{ env.itemEnv ?  env.itemEnv.value : '' }}</strong>
           <v-text-field
-            v-if="isEditing"
-            :value="env.itemEnv.value"
+            v-if="isEditing && env.itemEnv"
+            v-model="env.itemEnv.value"
             label="value"
           ></v-text-field>
         </v-container>
@@ -149,33 +149,29 @@ export default {
     },
     save() {
       // if(this.isEditing = true){
-
+      console.log(this.dataItem)
       this.$axios.patch(`http://localhost:80/api/edit/alldata/${this.selectedCardId}`,
         {
           ProjectName: this.dataItem.projectName,
           gitUrl: this.dataItem.gitUrl,
           description: this.dataItem.description,
           remoteName: this.dataItem.remoteName,
-
-
           personInCharge: this.dataItem.personInCharge,
-          env :this.env,
+          env :this.dataItem.env,
           // env:{
           //   name:this.dataItem.env.name,
           //   itemEnv: {
-          //     key : this.dataItem.env.key,
-          //     value : this.dataItem.env.value,
+          //     key : this.dataItem.env[0].itemEnv.key,
+          //     value : this.dataItem.env.itemEnv.value,
           //   }
-          // }
+          // },
         }
       ).then(({data}) => {
-        console.log(data)
         this.dataItem = data
         this.isEditing = false
         this.cancleEditing = false
         // this.isCancle = true
       }).finally((data) => {
-        console.log(data)
         this.fetch()
       })
     },
