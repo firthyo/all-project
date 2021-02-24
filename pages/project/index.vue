@@ -139,7 +139,6 @@
                                     <v-text-field
                                       v-model="gitUrl"
                                       label="Git Url"
-
                                       prepend-icon="mdi-link-variant"
                                       required
                                     ></v-text-field>
@@ -484,10 +483,10 @@ export default {
         personInCharge: this.personInCharge,
         env : {
           name : this.envName,
-          itemEnv: {
+          itemEnv: [{
             key: this.envKey,
             value: this.envValue,
-          }
+          }]
         }
       })
         .then(({data}) => {
