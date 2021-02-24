@@ -3,26 +3,25 @@
     <v-card-title class="py-6" style="flex-wrap: wrap">
       <div>
         <span class="font-weight-bold display-1 basil--text">
-        {{ dataItem.ProjectName }}
+        {{ dataItem ? dataItem.ProjectName : '' }}
       </span>
       </div>
       <div style="flex-basis: 100%"></div>
       <div>
         <h4 class="font-weight-light">
-          Detail : {{ dataItem.description }}
+          Detail : {{ dataItem ? dataItem.description : '' }}
         </h4>
       </div>
     </v-card-title>
-    <v-container>
-      <v-card
-        v-model="dataItem"
-      >
+    <v-container v-if="dataItem">
+      <v-card>
         <v-container>
           <h2>Git</h2>
           <div>
+            <!--              :value="dataItem.remoteName"-->
             <v-text-field
               v-if="isEditing"
-              :value="dataItem.remoteName"
+              v-model="dataItem.remoteName"
               label="Git Remotename"
             ></v-text-field>
             <strong v-if="!isEditing">Remote Name : {{ dataItem.remoteName }} </strong>
@@ -31,7 +30,7 @@
             <strong>Git url :</strong>
             <v-text-field
               v-if="isEditing"
-              :value="dataItem.gitUrl"
+              v-model="dataItem.gitUrl"
             ></v-text-field>
             <v-chip
               class="ma-2"
@@ -42,11 +41,8 @@
               <v-icon left>
                 mdi-git
               </v-icon>
-
               <a href="#" v-if="!isEditing">{{ dataItem.gitUrl }}</a>
-
             </v-chip>
-
           </div>
           <div>
             <strong> Person in charge :</strong>
@@ -79,11 +75,9 @@
 
             </v-chip>
           </div>
-          {{ dataItem }}
         </v-container>
       </v-card>
       <v-card v-for="env in dataItem.env" class="mt-2">
-        {{ env }}
         <v-container>
           <h2>Environment</h2>
           <div>
@@ -93,25 +87,14 @@
               :value="env.name"
               label="Environment Name"
             ></v-text-field>
+
           </div>
-<!--          <div>-->
-
-<!--&lt;!&ndash;            <v-text-field v-if="isEditing"&ndash;&gt;-->
-<!--&lt;!&ndash;                          :value="kv"&ndash;&gt;-->
-<!--&lt;!&ndash;                          label="Key"&ndash;&gt;-->
-<!--&lt;!&ndash;                          v-model="dataItem.key"></v-text-field>&ndash;&gt;-->
-<!--&lt;!&ndash;            <strong v-if="!isEditing">Key : {{kv.key}} </strong> || <strong>Value : </strong> {{ kv.value }}&ndash;&gt;-->
-<!--&lt;!&ndash;            {{kv}}&ndash;&gt;-->
-
-<!--          </div>-->
-              <span>xxxxxxxx</span>
-          <span> This is KEY :{{ env.itemEnv.key}}</span>
-          <span> This is VALUE :{{ env.itemEnv.value}}</span>
-
+          <v-divider></v-divider>
+          <strong> Key :{{ env.itemEnv.key }}</strong>
+          <v-divider></v-divider>
+          <strong> Value :{{ env.itemEnv.value }}</strong>
         </v-container>
-
       </v-card>
-
       <div align="center">
         <v-btn class="ma-4" color="primary" @click="editAllItem">แก้ไข</v-btn>
         <!--        save ควรอยู่ปุ่มเดียวกับแก้ไข-->
@@ -127,7 +110,7 @@ export default {
       selectedCardId: null,
       tab: null,
       data: null,
-      dataItem: [],
+      dataItem: null,
       isEditing: false,
       newItem: [],
     }
@@ -141,15 +124,20 @@ export default {
   methods: {
     save() {
       // if(this.isEditing = true){
-      //   this.$axios.patch(`http://localhost:80/api/edit/alldata/${this.selectedCardId}`)
-      //     .then(({data}) => {
-      //       this.dataItem = data
-      //     })
-      // }
+      this.$axios.patch(`http://localhost:80/api/edit/alldata/${this.selectedCardId}`,
+        {
+          ProjectName : this.dataItem.projectName,
+
+        }
+      )
+        .then(({data}) => {
+          this.dataItem = data
+        })
+
     },
     editAllItem() {
       this.$axios.get(`http://localhost:80/api/alldata/`)
-        .then(({data})=>{
+        .then(({data}) => {
 
         })
       this.isEditing = true
@@ -167,7 +155,7 @@ export default {
       // this.$axios.$get('localhost/api/alldata').then((dataResult)=>{
       this.$axios.get(`http://localhost:80/api/alldata/${this.selectedCardId}`).then(({data}) => {
         this.dataItem = data
-       // console.log(data)
+        // console.log(data)
       }).catch((err) => {
         (err)
       })
