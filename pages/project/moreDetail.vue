@@ -21,9 +21,9 @@
       </div>
     </v-card-title>
     <v-container v-if="dataItem">
+      <h2>Git</h2>
       <v-card>
         <v-container>
-          <h2>Git</h2>
           <div>
             <!--              :value="dataItem.remoteName"-->
             <v-text-field
@@ -78,15 +78,14 @@
               <!--                  {{member}}-->
               {{ member }}
               <!--                  {{alldata.personInCharge}}-->
-
-
             </v-chip>
           </div>
         </v-container>
       </v-card>
+      <h2 class="mt-3">Environment</h2>
       <v-card v-for="env in dataItem.env" class="mt-2">
         <v-container>
-          <h2>Environment</h2>
+
           <div>
             <strong class="pt-1" v-if="!isEditing">Env Name : {{ env.name }}</strong>
             <v-text-field
@@ -94,23 +93,59 @@
               v-model="env.name"
               label="Name"
             ></v-text-field>
-
           </div>
-          <strong v-if="!isEditing"> Key :{{ env.itemEnv ? env.itemEnv.key : '' }}</strong>
+          <strong v-if="!isEditing"> Key :{{ env.itemEnv ? env.itemEnv.key : 'none' }}</strong>
+<!--          <div v-for="n in dataItem.env">-->
+<!--            <p>testKey :{{n.key}}</p>-->
+<!--&lt;!&ndash;            <p>{{env.itemEnv.key}}</p>&ndash;&gt;-->
+<!--          </div>-->
+<!--          env.itemEnv.key-->
+
           <v-spacer></v-spacer>
-          <v-text-field
-            v-if="isEditing && env.itemEnv"
-            v-model="env.itemEnv.key"
-            label="key"
-          ></v-text-field>
-          <strong v-if="!isEditing"> Value :{{ env.itemEnv ? env.itemEnv.value : '' }}</strong>
-          <v-text-field
-            v-if="isEditing && env.itemEnv"
-            v-model="env.itemEnv.value"
-            label="value"
-          ></v-text-field>
+<!--          <v-text-field-->
+<!--            v-if="isEditing && env.itemEnv"-->
+<!--            v-model="env.itemEnv.key"-->
+<!--            label="key"-->
+<!--          ></v-text-field>-->
+<!--          <strong v-if="!isEditing"> Value :{{ env.itemEnv ? env.itemEnv.value : '' }}</strong>-->
+<!--          <v-text-field-->
+<!--            v-if="isEditing && env.itemEnv"-->
+<!--            v-model="env.itemEnv.value"-->
+<!--            label="value"-->
+<!--          ></v-text-field>-->
+          <div v-for="kv in env.itemEnv">
+<!--            <p>{{kv}}</p>-->
+            <strong v-if="!isEditing">key : {{kv.key}}</strong>
+            <v-text-field
+              v-if="isEditing"
+              v-model="kv.key"
+              label="value"
+            ></v-text-field>
+            <strong v-if="!isEditing">value : {{kv.value}}</strong>
+            <v-text-field
+              v-if="isEditing"
+              v-model="kv.value"
+              label="value"
+            ></v-text-field>
+          </div>
         </v-container>
-        <v-btn color="primary" class="ma-4 " @click="openEnvDialog">เพิ่ม Env</v-btn>
+      </v-card>
+      <div align="center">
+        <v-btn class="ma-4 " color="primary" @click="editAllItem" v-if="!cancleEditing">
+          <v-icon left>mdi-pencil</v-icon>
+          แก้ไข
+        </v-btn>
+        <v-btn class="ma-4" color="error" v-if="cancleEditing" @click="cancleEdit">ยกเลิก</v-btn>
+
+        <!--        save ควรอยู่ปุ่มเดียวกับแก้ไข-->
+        <v-btn class="ma-4" color="primary" @click="save">
+          <v-icon left>mdi-content-save</v-icon>
+          บันทึก
+        </v-btn>
+        <v-btn color="primary" class="ma-4 " @click="openEnvDialog">
+          <v-icon left>mdi-server-plus</v-icon>
+          เพิ่ม Env
+        </v-btn>
         <v-dialog
           v-model="dialogAddEnv"
           persistent
@@ -144,7 +179,7 @@
                 @click="addNewEnv"
               >
                 ตกลง
-<!--                call patch API-->
+                <!--                call patch API-->
               </v-btn>
               <v-btn
                 color="error"
@@ -155,14 +190,48 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-      </v-card>
-      <div align="center">
-        <v-btn class="ma-4 " color="primary" @click="editAllItem" v-if="!cancleEditing">แก้ไข</v-btn>
-        <v-btn class="ma-4" color="error" v-if="cancleEditing" @click="cancleEdit">ยกเลิก</v-btn>
-
-        <!--        save ควรอยู่ปุ่มเดียวกับแก้ไข-->
-        <v-btn class="ma-4" color="primary" @click="save">บันทึก</v-btn>
       </div>
+<!--      <div>-->
+<!--        <v-btn @click="addBlock">Add block</v-btn>-->
+<!--      </div>-->
+<!--      <v-card>-->
+<!--        <v-container>-->
+<!--          <v-row>-->
+<!--            <v-col cols="12">-->
+<!--              <v-text-field-->
+<!--                label="Env Name"-->
+<!--              ></v-text-field>-->
+<!--            </v-col>-->
+<!--            <v-col cols="6">-->
+<!--              <v-text-field-->
+<!--                label="Env Key"-->
+<!--              ></v-text-field>-->
+<!--            </v-col>-->
+<!--            <v-col cols="6">-->
+<!--              <v-text-field-->
+<!--                label="Env value"-->
+<!--              ></v-text-field>-->
+<!--            </v-col>-->
+<!--          </v-row>-->
+<!--        </v-container>-->
+
+<!--        <v-card-actions>-->
+<!--          <v-spacer></v-spacer>-->
+<!--          <v-btn-->
+<!--            color="success"-->
+<!--            @click="addNewEnv"-->
+<!--          >-->
+<!--            ตกลง-->
+<!--            &lt;!&ndash;                call patch API&ndash;&gt;-->
+<!--          </v-btn>-->
+<!--          <v-btn-->
+<!--            color="error"-->
+<!--            @click="dialogAddEnv = false"-->
+<!--          >-->
+<!--            ยกเลิก-->
+<!--          </v-btn>-->
+<!--        </v-card-actions>-->
+<!--      </v-card>-->
     </v-container>
   </v-card>
 
@@ -181,6 +250,15 @@ export default {
       //not cancle
       dialogAddEnv: false,
       newItem: [],
+      newEnv :[{
+        env : [{
+          name : '',
+          itemEnv : [{
+            key : '',
+            value : '',
+          }]
+        }]
+      }]
     }
   },
   mounted() {
@@ -190,19 +268,56 @@ export default {
   },
 
   methods: {
-    addNewEnv(){
+    // addListCredit() {
+    //   this.tempModelCredit = {
+    //     ...this.tempModelCredit,
+    //     id: this.modelCredit.length + 1,
+    //   }
+    //   this.modelCredit.push(this.tempModelCredit)
+    //
+    //   this.tempModelCredit = {
+    //     id: null,
+    //     imageId: null,
+    //     imageUrl: null,
+    //     url: null,
+    //   }
+    // },
+    // addBlock() {
+    //   this.addData.push(haveData)
+    // },
+    addNewEnv() {
       //มันเปลี่ยน ค่า Key and Value เลย  ไม่ได้ Add
       this.$axios.patch(`http://localhost:80/api/edit/alldata/${this.selectedCardId}`,
-        { env: this.dataItem.env,})
-      .then(({data})=>{
-        this.dataItem = data
-        console.log('then')
-        this.dialogAddEnv = false
-      })
-      .finally((data)=>{
-        console.log(this.dataItem)
-        this.fetch()
-      })
+        {env: this.dataItem.env,})
+        .then(({data}) => {
+          if(this.newEnv){
+            Object.assign(this.dataItem,this.newEnv)
+            //ถ้ามี array อยุ่แล้ว ให้เพื่มเข้าไป
+            this.dataItem = data
+          }else{
+
+            this.dataItem.push(this.newEnv)
+          }
+
+          console.log(data)
+          console.log(this.dataItem.env)
+          console.log(this.dataItem)
+
+          //มี Env อยู่แล้ว อยากจะเพิ่มเข้าไป
+          //env : []
+          //inside env : [name,itemEnv]
+          //inside itemEnv : [{key,value}]
+
+          //Env ใน Database = []
+          //API ที่รับค่า Env = รับเหมือนการรับ Data ทั่วไป
+          // this.dataItem.push(this.dataItem.env)
+          // console.log('then')
+          this.dialogAddEnv = false
+        })
+        .finally((data) => {
+          console.log(this.dataItem)
+          this.fetch()
+        })
     },
     openEnvDialog() {
       this.dialogAddEnv = true
@@ -223,6 +338,7 @@ export default {
           remoteName: this.dataItem.remoteName,
           personInCharge: this.dataItem.personInCharge,
           env: this.dataItem.env,
+
           // env:{
           //   name:this.dataItem.env.name,
           //   itemEnv: {

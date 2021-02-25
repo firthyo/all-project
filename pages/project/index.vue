@@ -451,12 +451,11 @@ export default {
       envValue:null,
       env: [{
         name:'',
-        itemEnv:[
+        itemEnv:
           {
             key:'',
             value:''
           }
-        ]
       }],
     }
   },
@@ -483,10 +482,10 @@ export default {
         personInCharge: this.personInCharge,
         env : {
           name : this.envName,
-          itemEnv: [{
+          itemEnv:{
             key: this.envKey,
             value: this.envValue,
-          }]
+          }
         }
       })
         .then(({data}) => {
@@ -542,8 +541,8 @@ export default {
       this.itemsPerPage = number
     },
   },
-  components: {
-    AddProject
-  }
+  // components: {
+  //   AddProject
+  // }
 }
 </script>
