@@ -4,13 +4,13 @@
       <div v-if="dataItem">
         <span v-model="dataItem.ProjectName" class="font-weight-light display-1 basil--text">
 <!--        {{ dataItem ? dataItem.ProjectName : '' }}-->
-          Project Name : {{dataItem.ProjectName}}
-<!--          {{dataItem.projectName}}-->
-<!--           <v-text-field-->
-<!--             v-if="isEditing"-->
-<!--             v-model="dataItem.ProjectName"-->
-<!--             label="Project Name"-->
-<!--           ></v-text-field>-->
+          Project Name : {{ dataItem.ProjectName }}
+          <!--          {{dataItem.projectName}}-->
+          <!--           <v-text-field-->
+          <!--             v-if="isEditing"-->
+          <!--             v-model="dataItem.ProjectName"-->
+          <!--             label="Project Name"-->
+          <!--           ></v-text-field>-->
       </span>
       </div>
       <div style="flex-basis: 100%"></div>
@@ -96,20 +96,65 @@
             ></v-text-field>
 
           </div>
-          <strong v-if="!isEditing"> Key :{{ env.itemEnv ? env.itemEnv.key : ''  }}</strong>
+          <strong v-if="!isEditing"> Key :{{ env.itemEnv ? env.itemEnv.key : '' }}</strong>
           <v-spacer></v-spacer>
           <v-text-field
             v-if="isEditing && env.itemEnv"
             v-model="env.itemEnv.key"
             label="key"
           ></v-text-field>
-          <strong v-if="!isEditing"> Value :{{ env.itemEnv ?  env.itemEnv.value : '' }}</strong>
+          <strong v-if="!isEditing"> Value :{{ env.itemEnv ? env.itemEnv.value : '' }}</strong>
           <v-text-field
             v-if="isEditing && env.itemEnv"
             v-model="env.itemEnv.value"
             label="value"
           ></v-text-field>
         </v-container>
+        <v-btn color="primary" class="ma-4 " @click="openEnvDialog">เพิ่ม Env</v-btn>
+        <v-dialog
+          v-model="dialogAddEnv"
+          persistent
+          max-width="400"
+        >
+          <v-card>
+            <v-container>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    label="Env Name"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field
+                    label="Env Key"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field
+                    label="Env value"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-container>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="success"
+                @click="addNewEnv"
+              >
+                ตกลง
+<!--                call patch API-->
+              </v-btn>
+              <v-btn
+                color="error"
+                @click="dialogAddEnv = false"
+              >
+                ยกเลิก
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-card>
       <div align="center">
         <v-btn class="ma-4 " color="primary" @click="editAllItem" v-if="!cancleEditing">แก้ไข</v-btn>
@@ -120,6 +165,7 @@
       </div>
     </v-container>
   </v-card>
+
 </template>
 <script>
 export default {
@@ -133,6 +179,7 @@ export default {
       isEditing: false,
       cancleEditing: false,
       //not cancle
+      dialogAddEnv: false,
       newItem: [],
     }
   },
@@ -143,7 +190,25 @@ export default {
   },
 
   methods: {
-    cancleEdit(){
+    addNewEnv(){
+      //มันเปลี่ยน ค่า Key and Value เลย  ไม่ได้ Add
+      this.$axios.patch(`http://localhost:80/api/edit/alldata/${this.selectedCardId}`,
+        { env: this.dataItem.env,})
+      .then(({data})=>{
+        this.dataItem = data
+        console.log('then')
+        this.dialogAddEnv = false
+      })
+      .finally((data)=>{
+        console.log(this.dataItem)
+        this.fetch()
+      })
+    },
+    openEnvDialog() {
+      this.dialogAddEnv = true
+      //  open dialog
+    },
+    cancleEdit() {
       this.cancleEditing = false
       this.isEditing = false
     },
@@ -157,7 +222,7 @@ export default {
           description: this.dataItem.description,
           remoteName: this.dataItem.remoteName,
           personInCharge: this.dataItem.personInCharge,
-          env :this.dataItem.env,
+          env: this.dataItem.env,
           // env:{
           //   name:this.dataItem.env.name,
           //   itemEnv: {
@@ -176,7 +241,7 @@ export default {
       })
     },
     editAllItem() {
-      this.cancleEditing =true
+      this.cancleEditing = true
       this.$axios.get(`http://localhost:80/api/alldata/`)
         .then(({data}) => {
         })
