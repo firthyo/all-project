@@ -480,13 +480,13 @@ export default {
         gitUrl: this.gitUrl,
         remoteName: this.remoteName,
         personInCharge: this.personInCharge,
-        env : {
+        env : [{
           name : this.envName,
-          itemEnv:{
+          itemEnv:[{
             key: this.envKey,
             value: this.envValue,
-          }
-        }
+          }]
+        }]
       })
         .then(({data}) => {
           // this.allData = data
