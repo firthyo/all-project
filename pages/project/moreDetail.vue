@@ -126,13 +126,13 @@
             ></v-text-field>
             <div>
               <v-dialog
-                v-for="env in dataItem.env"
+                v-for="envItem in dataItem.env"
                 max-width="590"
                 v-model="isOpenAddkvDialog"
               >
 
                 <v-card>
-                  {{env}}
+                  {{envItem}}
                   <v-container>
                     <p>
 
@@ -156,14 +156,12 @@
                       </v-col>
                     </v-row>
                   </v-container>
-                  <v-btn color="success" @click="AddEnvKv(env)">ตกลง</v-btn>
-                  <v-btn color="error">ยกเลิก</v-btn>
+                  <v-btn color="success" @click="AddEnvKv(envItem)">ตกลง</v-btn>
+                  <v-btn color="error" @click="closeAddkv">ยกเลิก</v-btn>
                 </v-card>
               </v-dialog>
             </div>
           </div>
-          <!--          {{env.itemEnv}}-->
-          <!--          {{env.itemEnv.key}}-->
           <v-divider class="mb-2"></v-divider>
 
           <div class="d-flex justify-start align-center">
@@ -363,6 +361,9 @@ export default {
 
     },
     //เพิ่ม Env
+    closeAddkv(){
+      this.isOpenAddkvDialog = false
+    },
     cancelAddEnvDialog() {
       this.dialogAddEnv = false
     },
@@ -424,7 +425,7 @@ export default {
           this.isOpenAddkvDialog = false,
           this.clearDialogKeyValclear()
           console.log('this is (success) ', data)
-          console.log(env)
+          console.log(kv)
         }).finally(() => {
         this.fetch()
       })
