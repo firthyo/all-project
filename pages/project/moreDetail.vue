@@ -125,12 +125,14 @@
               label="Name"
             ></v-text-field>
             <div>
-
               <v-dialog
-                max-width="490"
+                v-for="env in dataItem.env"
+                max-width="590"
                 v-model="isOpenAddkvDialog"
               >
+
                 <v-card>
+                  {{env}}
                   <v-container>
                     <p>
 
@@ -154,7 +156,8 @@
                       </v-col>
                     </v-row>
                   </v-container>
-                  <v-btn @click="AddEnvKv(env)">ตกลงเพิ่ม</v-btn>
+                  <v-btn color="success" @click="AddEnvKv(env)">ตกลง</v-btn>
+                  <v-btn color="error">ยกเลิก</v-btn>
                 </v-card>
               </v-dialog>
             </div>
@@ -291,12 +294,13 @@
         </v-dialog>
       </div>
     </v-container>
+    <v-expansion-panels>
+      <p>ldldll</p>
+    </v-expansion-panels>
   </v-card>
 
 </template>
 <script>
-import datadetail from "@/pages/datadetail";
-
 export default {
   data() {
     return {
@@ -332,7 +336,6 @@ export default {
     }
   },
   mounted() {
-
     this.selectedCardId = this.$route.query.id
     this.fetch()
     // this.envID = this.$route.query.id
@@ -340,20 +343,52 @@ export default {
   },
 
   methods: {
-
+    //**********************************//
+    //Dialog Env  ทั้งหมด
     closeDeleteWholeEnv() {
       this.isOpenDeleteEnv = false
     },
     openDeleteWholeEnv() {
       this.isOpenDeleteEnv = true
     },
-    openDeleteKvdialog() {
-      this.isOpenDeleteKvdialog = true
-
+    //เฉพาะ KV
+    openAddKvDialog() {
+      this.isOpenAddkvDialog = true
     },
     closeDeleteKvdialog() {
       this.isOpenDeleteKvdialog = false
     },
+    openDeleteKvdialog() {
+      this.isOpenDeleteKvdialog = true
+
+    },
+    //เพิ่ม Env
+    cancelAddEnvDialog() {
+      this.dialogAddEnv = false
+    },
+    openEnvDialog() {
+      this.dialogAddEnv = true
+      //  open dialog
+    },
+    cancleEdit() {
+      this.cancleEditing = false
+      this.isEditing = false
+
+    },
+    //**********************************//
+
+    //**********************************//
+    clearDialogKeyValclear(){
+      this.addMoreEnvKey = []
+      this.addMoreEnvVal = []
+    },
+    clearDialogEnvData() {
+      this.addMoreEnvName = []
+      this.addMoreEnvKey = []
+      this.addMoreEnvVal = []
+    },
+    //**********************************//
+
 
     deleteWholeEnv(wholeEnv) {
       let envData = this.dataItem.env;
@@ -370,24 +405,26 @@ export default {
       ).then(({data}) => {
         this.dataItem = data
         // this.isCancle = true
-        this.isOpenDeleteEnv = true
+        this.isOpenDeleteEnv = false
       }).finally((data) => {
         this.fetch()
       })
     },
-    openAddKvDialog() {
-      this.isOpenAddkvDialog = true
-    },
-    AddEnvKv(env) {
-      this.$axios.patch(`http://localhost:80/api/env/keyval/${env._id}`,
+
+    //**********************************//
+    AddEnvKv(kv) {
+      console.log(kv.id)
+      this.$axios.patch(`http://localhost:80/api/env/keyval/${kv._id}`,
         {
           key: this.addMoreEnvKey,
           value: this.addMoreEnvVal
         })
         .then((data) => {
-          // this.dataItem = data
-          this.isOpenAddkvDialog = false
+          this.dataItem = data
+          this.isOpenAddkvDialog = false,
+          this.clearDialogKeyValclear()
           console.log('this is (success) ', data)
+          console.log(env)
         }).finally(() => {
         this.fetch()
       })
@@ -408,24 +445,16 @@ export default {
         }
       ).then(({data}) => {
         this.dataItem = data
+        this.isOpenDeleteKvdialog = false
         // this.isCancle = true
       }).finally((data) => {
         this.fetch()
       })
-    }
-    ,
+    },
+    //**********************************//
 
-    clearDialogEnvData() {
-      this.addMoreEnvName = []
-      this.addMoreEnvKey = []
-      this.addMoreEnvVal = []
-    }
-    ,
-    cancelAddEnvDialog() {
-      this.dialogAddEnv = false
-      this.clearDialogEnvData()
-    }
-    ,
+
+    //**********************************//
     addNewEnv() {
       //มันเปลี่ยน ค่า Key and Value เลย  ไม่ได้ Add
       // console.log('--->', this.dataItem.env,this.addMoreEnvName,this.addMoreEnvKey,this.addMoreEnvVal)
@@ -451,19 +480,10 @@ export default {
         console.log(this.dataItem)
         this.fetch()
       })
-    }
-    ,
-    openEnvDialog() {
-      this.dialogAddEnv = true
-      //  open dialog
-    }
-    ,
-    cancleEdit() {
-      this.cancleEditing = false
-      this.isEditing = false
+    },
+    //**********************************//
 
-    }
-    ,
+
     save() {
       // if(this.isEditing = true){
       // console.log(this.dataItem)
@@ -485,8 +505,7 @@ export default {
       }).finally((data) => {
         this.fetch()
       })
-    }
-    ,
+    },
     editAllItem() {
       this.cancleEditing = true
       this.$axios.get(`http://localhost:80/api/alldata/`)
@@ -495,16 +514,8 @@ export default {
         })
       this.isEditing = true
 
-    }
-    ,
-    // editingData(editdata){
-    //   if(editdata.editingdata){
-    //     this.isEditing = false
-    //   }else{
-    //     this.isEditing =true
-    //   }
-    //
-    // },
+    },
+
     fetch() {
       // this.$axios.$get('localhost/api/alldata').then((dataResult)=>{
       this.$axios.get(`http://localhost:80/api/alldata/${this.selectedCardId}`).then(({data}) => {
