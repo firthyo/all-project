@@ -4,7 +4,7 @@
       <template>
         <v-container fluid>
           <v-data-iterator
-            :items="items"
+            :items="allData"
             :items-per-page.sync="itemsPerPage"
             :page.sync="page"
             :search="search"
@@ -27,51 +27,6 @@
                   prepend-inner-icon="mdi-magnify"
                   label="Search"
                 ></v-text-field>
-                <template v-if="$vuetify.breakpoint.mdAndUp">
-                  <v-spacer></v-spacer>
-                  <v-select
-                    v-model="sortBy"
-                    flat
-                    solo-inverted
-                    hide-details
-                    :items="keys"
-                    prepend-inner-icon="mdi-magnify"
-                    label="Sort by"
-                  ></v-select>
-                  <v-spacer></v-spacer>
-                  <v-select
-                    v-model="sortBy"
-                    flat
-                    solo-inverted
-                    hide-details
-                    :items="keys"
-                    prepend-inner-icon="mdi-magnify"
-                    label="Sort by"
-                  ></v-select>
-
-                  <v-spacer></v-spacer>
-                  <v-btn-toggle
-                    v-model="sortDesc"
-                    mandatory
-                  >
-                    <v-btn
-                      large
-                      depressed
-                      color="blue"
-                      :value="false"
-                    >
-                      <v-icon>mdi-arrow-up</v-icon>
-                    </v-btn>
-                    <v-btn
-                      large
-                      depressed
-                      color="blue"
-                      :value="true"
-                    >
-                      <v-icon>mdi-arrow-down</v-icon>
-                    </v-btn>
-                  </v-btn-toggle>
-                </template>
               </v-toolbar>
             </template>
 
@@ -212,14 +167,10 @@
                         </v-dialog>
                       </v-row>
                     </template>
-
-
                   </v-card-title>
-
                 </v-col>
-
                 <v-col
-                  v-for="data in allData"
+                  v-for="data in props.items"
                   cols="12"
                   sm="6"
                   md="4"
@@ -234,47 +185,30 @@
                     <v-divider></v-divider>
 
                     <v-list dense>
-                      <v-list-item
-                        v-for="(key, index) in filteredKeys"
-                        :key="card"
-                      >
-                        <v-list-item-content :class="{ 'blue--text': sortBy === key }">
-                          {{ key }}:
-                        </v-list-item-content>
-                        <v-list-item-content
-                          class="align-end"
-                          :class="{ 'blue--text': sortBy === key }"
-                        >
-                          <v-row>
-                            <v-col cols="6">
-                              <v-btn
-                                depressed
-                                color="primary"
-                                @click="openDetail(data)"
-                              >
-                                รายละเอียด
-                                <!--                                {{allData}}-->
-                              </v-btn>
-                            </v-col>
-                            <v-col cols="6">
-                              <v-btn
-                                depressed
-                                color="red"
-                                class="white--text"
-                                @click="deleteItem(data._id)"
-                              >
-                                ลบ
-                                <!--                                {{allData}}-->
-                              </v-btn>
-                            </v-col>
-                          </v-row>
+                      <div>
+                        <v-container>
+                          <v-btn
+                            depressed
+                            color="primary"
+                            @click="openDetail(data)"
+                          >
+                            รายละเอียด
+                            <!--                                {{allData}}-->
+                          </v-btn>
+
+                          <v-btn
+                            depressed
+                            color="red"
+                            class="white--text"
+                            @click="deleteItem(data._id)"
+                          >
+                            ลบ
+                            <!--                                {{allData}}-->
+                          </v-btn>
+                        </v-container>
+                      </div>
 
 
-                          <!--                          this.$router.push-->
-                          <!--                          {{ items.createdBy }}-->
-                          <!--                          {{ items[key.toLowerCase()] }}-->
-                        </v-list-item-content>
-                      </v-list-item>
                     </v-list>
                   </v-card>
                 </v-col>
@@ -306,7 +240,7 @@
                     <v-list>
                       <v-list-item
                         v-for="(number, index) in itemsPerPageArray"
-                        :key="card"
+                        :key="index"
                         @click="updateItemsPerPage(number)"
                       >
                         <v-list-item-title>{{ number }}</v-list-item-title>
@@ -348,6 +282,7 @@
         </v-container>
       </template>
 
+
     </v-col>
   </v-row>
 </template>
@@ -359,84 +294,18 @@ export default {
   data() {
     return {
       card: '',
-      itemsPerPageArray: [10, 15, 20],
+      itemsPerPageArray: [5, 10, 15, 20],
       search: '',
       filter: {},
       sortDesc: false,
       page: 1,
-      itemsPerPage: 10,
+      itemsPerPage: 5,
       sortBy: 'name',
       keys: [
         'Name',
         'CreatedBy',
       ],
       allData: [],
-      items: [
-        {
-          id: "1",
-          name: 'System',
-          createdBy: '123',
-        },
-        {
-          id: "2",
-          name: '123',
-          CreatedBy: '123',
-
-        },
-        {
-          id: "3",
-          name: 'Syst333',
-
-        },
-        {
-          id: "4",
-          name: 'S4',
-        },
-        {
-          id: "5",
-          name: 'Sys5',
-
-
-        },
-        {
-          id: "6",
-          name: 'System True-Wallet6',
-
-        },
-        {
-          id: "7",
-          name: 'mepo2',
-
-        },
-        {
-          id: "8",
-          name: 'mepo1',
-
-        },
-        {
-          id: "9",
-          name: 'menu',
-
-        },
-        {
-          id: "10",
-          name: 'System True Wallets',
-        },
-        {
-          id: "11",
-          name: 'System True-Wallet2',
-
-        },
-        {
-          id: "12",
-          name: 'System True-Wallet3',
-        },
-        {
-          id: "13",
-          name: 'System True-Wallet4',
-
-        },
-      ],
       dialogAdd: false,
       dialogEdit: false,
       dialogCancleAdd: false,
@@ -446,15 +315,15 @@ export default {
       remoteName: null,
       personInCharge: [],
       description: null,
-      envName : null,
-      envKey : null,
-      envValue:null,
+      envName: null,
+      envKey: null,
+      envValue: null,
       env: [{
-        name:'',
+        name: '',
         itemEnv:
           {
-            key:'',
-            value:''
+            key: '',
+            value: ''
           }
       }],
     }
@@ -462,7 +331,8 @@ export default {
 
   computed: {
     numberOfPages() {
-      return Math.ceil(this.items.length / this.itemsPerPage)
+      // console.log(this.allData.length)
+      return Math.ceil(this.allData.length / this.itemsPerPage)
     },
     filteredKeys() {
       return this.keys.filter(key => key !== 'Name')
@@ -473,16 +343,27 @@ export default {
     this.fetchAllData()
   },
   methods: {
+    cleardialog() {
+      this.projectName = '',
+        this.gitUrl = '',
+        this.remoteName = '',
+        this.personInCharge = [],
+        this.description = '',
+        this.envName = '',
+        this.envKey = '',
+        this.envValue = ''
+    },
     addNewProject() {
       console.log('hi')
       this.$axios.post(`http://localhost/api/alldata`, {
         ProjectName: this.projectName,
+        description: this.description,
         gitUrl: this.gitUrl,
         remoteName: this.remoteName,
         personInCharge: this.personInCharge,
-        env : [{
-          name : this.envName,
-          itemEnv:[{
+        env: [{
+          name: this.envName,
+          itemEnv: [{
             key: this.envKey,
             value: this.envValue,
           }]
@@ -491,6 +372,7 @@ export default {
         .then(({data}) => {
           // this.allData = data
           this.fetchAllData()
+          this.cleardialog()
           console.log(data)
         })
         .catch((error) => console.error(error))

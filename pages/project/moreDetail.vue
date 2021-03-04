@@ -3,25 +3,28 @@
     <v-card-title class="py-6" style="flex-wrap: wrap">
       <div v-if="dataItem">
         <span v-model="dataItem.ProjectName" class="font-weight-light display-1 basil--text">
-<!--        {{ dataItem ? dataItem.ProjectName : '' }}-->
           Project Name : {{ dataItem.ProjectName }}
-          <!--          {{dataItem.projectName}}-->
-          <!--           <v-text-field-->
-          <!--             v-if="isEditing"-->
-          <!--             v-model="dataItem.ProjectName"-->
-          <!--             label="Project Name"-->
-          <!--           ></v-text-field>-->
       </span>
+        <div v-model="dataItem.description">
+          <h4 class="font-weight-light">
+            Detail : {{ dataItem ? dataItem.description : '' }}
+          </h4>
+        </div>
       </div>
       <div style="flex-basis: 100%"></div>
-      <div>
-        <h4 class="font-weight-light">
-          Detail : {{ dataItem ? dataItem.description : '' }}
-        </h4>
-      </div>
     </v-card-title>
     <v-container v-if="dataItem">
-      <h2>Git</h2>
+      <v-row >
+        <v-col cols="6">
+          <h2>Git</h2>
+        </v-col>
+        <v-col cols="6"  class="d-flex justify-end">
+          <v-btn class="mb-2 " small color="warning" @click="editAllItem" v-if="!cancleEditing">
+            <v-icon>mdi-pencil</v-icon>
+          </v-btn>
+        </v-col>
+      </v-row>
+
       <v-card>
         <v-container>
           <div>
@@ -41,14 +44,14 @@
             ></v-text-field>
             <v-chip
               class="ma-2"
-              color="primary"
+              color="blue-grey darken-3"
               outlined
               v-if="!isEditing"
             >
               <v-icon left>
                 mdi-git
               </v-icon>
-              <a href="#" v-if="!isEditing">{{ dataItem.gitUrl }}</a>
+              <a href="#" v-if="!isEditing" style="color: #35495e">{{ dataItem.gitUrl }}</a>
             </v-chip>
           </div>
           <div>
@@ -68,7 +71,7 @@
             <v-chip
               v-if="!isEditing"
               class="ma-1"
-              color="indigo"
+              color="blue-grey darken-3"
               text-color="white"
               v-for="member in dataItem.personInCharge"
             >
@@ -85,9 +88,36 @@
       <h2 class="mt-3">Environment</h2>
       <v-card v-for="env in dataItem.env" class="mt-2">
         <v-container>
-
           <div>
-            <strong class="pt-1" v-if="!isEditing">Env Name : {{ env.name }}</strong>
+            <strong>
+              Env Name : {{ env.name }}
+            </strong>
+            <v-btn color="error" small class="ma-1" @click="openDeleteWholeEnv">
+              <v-icon>
+                mdi-delete
+              </v-icon>
+            </v-btn>
+            <v-dialog
+              v-for="wholeEnv in dataItem.env"
+              max-width="290"
+              v-model="isOpenDeleteEnv"
+            >
+              <v-card>
+                <v-container>
+                  <p>ยืนยันที่จะลบ <strong>{{ wholeEnv.name }}</strong> นี้</p>
+                  <v-btn @click="deleteWholeEnv(env)" color="success">
+                    ตกลง
+                  </v-btn>
+                  <v-btn color="error" @click="closeDeleteWholeEnv">
+                    ยกเลิก
+                  </v-btn>
+                </v-container>
+
+              </v-card>
+
+            </v-dialog>
+
+            <!--            <strong class="pt-1" v-if="!isEditing">Env Name : {{ env.name }}</strong>-->
             <!--            {{env}}-->
             <v-text-field
               v-if="isEditing"
@@ -95,7 +125,7 @@
               label="Name"
             ></v-text-field>
             <div>
-              <v-btn @click="AddEnvKv(envName)" color="primary">เพิ่ม</v-btn>
+
               <v-dialog
                 max-width="490"
                 v-model="isOpenAddkvDialog"
@@ -103,10 +133,10 @@
                 <v-card>
                   <v-container>
                     <p>
-                      เพิ่ม Key และ Value
+
+                       Key และ Value
                     </p>
                     <v-row>
-
                       <v-col cols="6">
                         <v-text-field
                           v-model="addMoreEnvKey"
@@ -124,86 +154,92 @@
                       </v-col>
                     </v-row>
                   </v-container>
+                  <v-btn @click="AddEnvKv(env)">ตกลงเพิ่ม</v-btn>
                 </v-card>
               </v-dialog>
             </div>
           </div>
           <!--          {{env.itemEnv}}-->
           <!--          {{env.itemEnv.key}}-->
+          <v-divider class="mb-2"></v-divider>
+
+          <div class="d-flex justify-start align-center">
+            <v-row>
+              <v-col cols="6">
+                <strong>
+                  Key / Value
+                </strong>
+              </v-col>
+            </v-row>
+            <v-col cols="6" class="d-flex justify-end">
+              <v-btn @click="openAddKvDialog" small color="primary ">เพิ่ม Key/Value</v-btn>
+            </v-col>
+
+          </div>
           <div v-for="kv in env.itemEnv" class="d-flex mt-2">
-            <div style="flex: 1 1;" class="mx-2">
+            <div style="flex: 1 1;">
+              <span v-if="!isEditing">Key : <strong>{{ kv.key }}</strong></span>
               <v-text-field
-                :readonly="!isEditing"
+                v-if="isEditing"
                 v-model="kv.key"
                 outlined
                 label="key"
               ></v-text-field>
             </div>
             <div style="flex: 2 1;" class="mx-2">
+              <span v-if="!isEditing">Value : <strong>{{ kv.value }}</strong></span>
               <v-text-field
-                :readonly="!isEditing"
+                v-if="isEditing"
                 v-model="kv.value"
                 outlined
                 label="val"
               ></v-text-field>
             </div>
-            <div>
-              <v-btn @click="deleteEnvKv(env, kv)">delete</v-btn>
+            <div class="d-flex">
+              <v-btn class="mb-3" small color="error" @click="openDeleteKvdialog">
+                <v-icon>
+                  mdi-delete
+                </v-icon>
+              </v-btn>
+              <v-dialog
+                max-width="390"
+                v-model="isOpenDeleteKvdialog"
+                v-for="envElement in dataItem.env"
+              >
+                <v-card>
+                  <v-container>
+                    <p>ยืนยันที่จะลบ Key และ Value ของ <strong>{{ envElement.name }}</strong></p>
+
+                    <v-btn
+                      @click="deleteEnvKv(env, kv)"
+                      color="success">
+                      ยืนยัน
+                    </v-btn>
+                    <v-btn
+                      color="error"
+                      @click="closeDeleteKvdialog"
+                    >
+                      ยกเลิก
+                    </v-btn>
+                  </v-container>
+                </v-card>
+              </v-dialog>
             </div>
-
           </div>
-
-
-          <!--          <div v-for="n in dataItem.env">-->
-          <!--            <p>testKey :{{n.key}}</p>-->
-          <!--&lt;!&ndash;            <p>{{env.itemEnv.key}}</p>&ndash;&gt;-->
-          <!--          </div>-->
-          <!--          env.itemEnv.key-->
-
           <v-spacer></v-spacer>
-          <!--          <v-text-field-->
-          <!--            v-if="isEditing && env.itemEnv"-->
-          <!--            v-model="env.itemEnv.key"-->
-          <!--            label="key"-->
-          <!--          ></v-text-field>-->
-          <!--          <strong v-if="!isEditing"> Value :{{ env.itemEnv ? env.itemEnv.value : '' }}</strong>-->
-          <!--          <v-text-field-->
-          <!--            v-if="isEditing && env.itemEnv"-->
-          <!--            v-model="env.itemEnv.value"-->
-          <!--            label="value"-->
-          <!--          ></v-text-field>-->
-          <!--          <div v-for="kv in env.itemEnv">-->
-          <!--            &lt;!&ndash;            <p>{{kv}}</p>&ndash;&gt;-->
-          <!--            <strong v-if="!isEditing">key : {{ kv.key }}</strong>-->
-          <!--            <v-text-field-->
-          <!--              v-if="isEditing"-->
-          <!--              v-model="kv.key"-->
-          <!--              label="value"-->
-          <!--            ></v-text-field>-->
-          <!--            <strong v-if="!isEditing">value : {{ kv.value }}</strong>-->
-          <!--            <v-text-field-->
-          <!--              v-if="isEditing"-->
-          <!--              v-model="kv.value"-->
-          <!--              label="value"-->
-          <!--            ></v-text-field>-->
-          <!--          </div>-->
         </v-container>
       </v-card>
       <div align="center">
-        <v-btn class="ma-4 " color="primary" @click="editAllItem" v-if="!cancleEditing">
-          <v-icon left>mdi-pencil</v-icon>
-          แก้ไข
+        <v-btn v-if="!cancleEditing" color="primary" class="ma-4 " @click="openEnvDialog">
+          <v-icon left>mdi-server-plus</v-icon>
+          เพิ่ม Env
         </v-btn>
-        <v-btn class="ma-4" color="error" v-if="cancleEditing" @click="cancleEdit">ยกเลิก</v-btn>
 
-        <!--        save ควรอยู่ปุ่มเดียวกับแก้ไข-->
+
+        <v-btn class="ma-2" color="error" v-if="cancleEditing" @click="cancleEdit">ยกเลิก</v-btn>
         <v-btn v-if="isEditing" class="ma-4" color="primary" @click="save">
           <v-icon left>mdi-content-save</v-icon>
           บันทึก
-        </v-btn>
-        <v-btn color="primary" class="ma-4 " @click="openEnvDialog">
-          <v-icon left>mdi-server-plus</v-icon>
-          เพิ่ม Env
         </v-btn>
         <v-dialog
           v-model="dialogAddEnv"
@@ -218,6 +254,7 @@
                     v-model="addMoreEnvName"
                     label="Env Name"
                   ></v-text-field>
+
                 </v-col>
                 <v-col cols="6">
                   <v-text-field
@@ -253,47 +290,6 @@
           </v-card>
         </v-dialog>
       </div>
-      <!--      <div>-->
-      <!--        <v-btn @click="addBlock">Add block</v-btn>-->
-      <!--      </div>-->
-      <!--      <v-card>-->
-      <!--        <v-container>-->
-      <!--          <v-row>-->
-      <!--            <v-col cols="12">-->
-      <!--              <v-text-field-->
-      <!--                label="Env Name"-->
-      <!--              ></v-text-field>-->
-      <!--            </v-col>-->
-      <!--            <v-col cols="6">-->
-      <!--              <v-text-field-->
-      <!--                label="Env Key"-->
-      <!--              ></v-text-field>-->
-      <!--            </v-col>-->
-      <!--            <v-col cols="6">-->
-      <!--              <v-text-field-->
-      <!--                label="Env value"-->
-      <!--              ></v-text-field>-->
-      <!--            </v-col>-->
-      <!--          </v-row>-->
-      <!--        </v-container>-->
-
-      <!--        <v-card-actions>-->
-      <!--          <v-spacer></v-spacer>-->
-      <!--          <v-btn-->
-      <!--            color="success"-->
-      <!--            @click="addNewEnv"-->
-      <!--          >-->
-      <!--            ตกลง-->
-      <!--            &lt;!&ndash;                call patch API&ndash;&gt;-->
-      <!--          </v-btn>-->
-      <!--          <v-btn-->
-      <!--            color="error"-->
-      <!--            @click="dialogAddEnv = false"-->
-      <!--          >-->
-      <!--            ยกเลิก-->
-      <!--          </v-btn>-->
-      <!--        </v-card-actions>-->
-      <!--      </v-card>-->
     </v-container>
   </v-card>
 
@@ -304,11 +300,13 @@ import datadetail from "@/pages/datadetail";
 export default {
   data() {
     return {
+      testDelete: false,
       addMoreEnvName: '',
       addMoreEnvKey: '',
       addMoreEnvVal: '',
       teamMember: ["firth", "Elon", "Bill", "Jeff", "Steve"],
       selectedCardId: null,
+      envId: null,
       isOpenAddkvDialog: false,
       tab: null,
       data: null,
@@ -319,6 +317,9 @@ export default {
       dialogAddEnv: false,
       newItem: [],
       newEnvItem: [],
+      isOpenDeleteKvdialog: false,
+      isOpenDeleteEnv: false,
+
       // newEnv :[{
       //   env : [{
       //     name : '',
@@ -331,20 +332,67 @@ export default {
     }
   },
   mounted() {
+
     this.selectedCardId = this.$route.query.id
     this.fetch()
+    // this.envID = this.$route.query.id
     // console.log(this.selectedCard)
   },
 
   methods: {
-    AddEnvKv(envName) {
-      this.isOpenAddkvDialog = true
-      // update kv
-      // this.$axios.post(`http://localhost:80/api/add/kv/${env}`)
+
+    closeDeleteWholeEnv() {
+      this.isOpenDeleteEnv = false
+    },
+    openDeleteWholeEnv() {
+      this.isOpenDeleteEnv = true
+    },
+    openDeleteKvdialog() {
+      this.isOpenDeleteKvdialog = true
 
     },
-    deleteEnvKv(enviroment, itemEnv) {
+    closeDeleteKvdialog() {
+      this.isOpenDeleteKvdialog = false
+    },
 
+    deleteWholeEnv(wholeEnv) {
+      let envData = this.dataItem.env;
+
+      let index = envData.findIndex(({_id}) => {
+        return _id === wholeEnv._id
+      })
+      envData.splice(index, 1)
+
+      this.$axios.patch(`http://localhost:80/api/edit/alldata/${this.selectedCardId}`,
+        {
+          env: envData,
+        }
+      ).then(({data}) => {
+        this.dataItem = data
+        // this.isCancle = true
+        this.isOpenDeleteEnv = true
+      }).finally((data) => {
+        this.fetch()
+      })
+    },
+    openAddKvDialog() {
+      this.isOpenAddkvDialog = true
+    },
+    AddEnvKv(env) {
+      this.$axios.patch(`http://localhost:80/api/env/keyval/${env._id}`,
+        {
+          key: this.addMoreEnvKey,
+          value: this.addMoreEnvVal
+        })
+        .then((data) => {
+          // this.dataItem = data
+          this.isOpenAddkvDialog = false
+          console.log('this is (success) ', data)
+        }).finally(() => {
+        this.fetch()
+      })
+    },
+    deleteEnvKv(enviroment, itemEnv) {
       let envData = this.dataItem.env.map(env => {
         if (env._id === enviroment._id) {
           let index = env.itemEnv.findIndex(({_id}) => {
@@ -354,7 +402,6 @@ export default {
         }
         return env
       })
-
       this.$axios.patch(`http://localhost:80/api/edit/alldata/${this.selectedCardId}`,
         {
           env: envData,
@@ -365,17 +412,20 @@ export default {
       }).finally((data) => {
         this.fetch()
       })
-    },
+    }
+    ,
 
     clearDialogEnvData() {
       this.addMoreEnvName = []
       this.addMoreEnvKey = []
       this.addMoreEnvVal = []
-    },
+    }
+    ,
     cancelAddEnvDialog() {
       this.dialogAddEnv = false
       this.clearDialogEnvData()
-    },
+    }
+    ,
     addNewEnv() {
       //มันเปลี่ยน ค่า Key and Value เลย  ไม่ได้ Add
       // console.log('--->', this.dataItem.env,this.addMoreEnvName,this.addMoreEnvKey,this.addMoreEnvVal)
@@ -401,16 +451,19 @@ export default {
         console.log(this.dataItem)
         this.fetch()
       })
-    },
+    }
+    ,
     openEnvDialog() {
       this.dialogAddEnv = true
       //  open dialog
-    },
+    }
+    ,
     cancleEdit() {
       this.cancleEditing = false
       this.isEditing = false
 
-    },
+    }
+    ,
     save() {
       // if(this.isEditing = true){
       // console.log(this.dataItem)
@@ -423,30 +476,8 @@ export default {
           remoteName: this.dataItem.remoteName,
           personInCharge: this.dataItem.personInCharge,
           env: this.dataItem.env,
-          // env :{
-          //   name : this.dataItem.env.name,
-          //   itemEnv : {
-          //     key : this.dataItem.env.itemEnv.key,
-          //     value: this.dataItem.env.itemEnv.value
-          //   }
-          // }
-          // env :{
-          //   name : this.dataItem.env.name,
-          //   itemEnv : {
-          //     key : this.dataItem.env.itemEnv.key,
-          //     value: this.dataItem.env.itemEnv.value
-          //   }
-          // }
-          // env:{
-          //   name:this.dataItem.env.name,
-          //   itemEnv: {
-          //     key : this.dataItem.env[0].itemEnv.key,
-          //     value : this.dataItem.env.itemEnv.value,
-          //   }
-          // },
         }
       ).then(({data}) => {
-        console.log('this is ' + data)
         this.dataItem = data
         this.isEditing = false
         this.cancleEditing = false
@@ -454,17 +485,18 @@ export default {
       }).finally((data) => {
         this.fetch()
       })
-    },
+    }
+    ,
     editAllItem() {
       this.cancleEditing = true
       this.$axios.get(`http://localhost:80/api/alldata/`)
         .then(({data}) => {
           // this.dataItem = data
         })
-
       this.isEditing = true
 
-    },
+    }
+    ,
     // editingData(editdata){
     //   if(editdata.editingdata){
     //     this.isEditing = false
@@ -477,7 +509,6 @@ export default {
       // this.$axios.$get('localhost/api/alldata').then((dataResult)=>{
       this.$axios.get(`http://localhost:80/api/alldata/${this.selectedCardId}`).then(({data}) => {
         this.dataItem = data
-        console.log("this is fetch", data)
       }).catch((err) => {
         (err)
       })
