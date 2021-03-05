@@ -14,11 +14,11 @@
       <div style="flex-basis: 100%"></div>
     </v-card-title>
     <v-container v-if="dataItem">
-      <v-row >
+      <v-row>
         <v-col cols="6">
           <h2>Git</h2>
         </v-col>
-        <v-col cols="6"  class="d-flex justify-end">
+        <v-col cols="6" class="d-flex justify-end">
           <v-btn class="mb-2 " small color="warning" @click="editAllItem" v-if="!cancleEditing">
             <v-icon>mdi-pencil</v-icon>
           </v-btn>
@@ -126,17 +126,14 @@
             ></v-text-field>
             <div>
               <v-dialog
-                v-for="envItem in dataItem.env"
                 max-width="590"
                 v-model="isOpenAddkvDialog"
               >
-
                 <v-card>
-                  {{envItem}}
                   <v-container>
                     <p>
 
-                       Key และ Value
+                      Key และ Value
                     </p>
                     <v-row>
                       <v-col cols="6">
@@ -156,7 +153,7 @@
                       </v-col>
                     </v-row>
                   </v-container>
-                  <v-btn color="success" @click="AddEnvKv(envItem)">ตกลง</v-btn>
+                  <v-btn color="success" @click="AddEnvKv()">ตกลง</v-btn>
                   <v-btn color="error" @click="closeAddkv">ยกเลิก</v-btn>
                 </v-card>
               </v-dialog>
@@ -173,7 +170,7 @@
               </v-col>
             </v-row>
             <v-col cols="6" class="d-flex justify-end">
-              <v-btn @click="openAddKvDialog" small color="primary ">เพิ่ม Key/Value</v-btn>
+              <v-btn @click="openAddKvDialog(env._id)" small color="primary ">เพิ่ม Key/Value</v-btn>
             </v-col>
 
           </div>
@@ -292,9 +289,41 @@
         </v-dialog>
       </div>
     </v-container>
-    <v-expansion-panels>
-      <p>ldldll</p>
-    </v-expansion-panels>
+    <template>
+
+      <template>
+        <v-container>
+          <v-expansion-panels>
+            <v-expansion-panel
+              v-for="(item,i) in 5"
+              :key="i"
+            >
+              <v-expansion-panel-header>
+               {{item}} Item
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+            <v-expansion-panel
+              v-for="x in dataItem.env"
+            >
+              <v-expansion-panel-header>
+                {{x.name}}
+              </v-expansion-panel-header>
+              <v-expansion-panel-content v-for="keyval in x.itemEnv">
+                {{keyval}}
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </v-container>
+
+      </template>
+
+
+    </template>
+
+
   </v-card>
 
 </template>
@@ -321,7 +350,7 @@ export default {
       newEnvItem: [],
       isOpenDeleteKvdialog: false,
       isOpenDeleteEnv: false,
-
+      selectedEnvId: null,
       // newEnv :[{
       //   env : [{
       //     name : '',
@@ -350,7 +379,8 @@ export default {
       this.isOpenDeleteEnv = true
     },
     //เฉพาะ KV
-    openAddKvDialog() {
+    openAddKvDialog(envId) {
+      this.selectedEnvId = envId
       this.isOpenAddkvDialog = true
     },
     closeDeleteKvdialog() {
@@ -361,7 +391,7 @@ export default {
 
     },
     //เพิ่ม Env
-    closeAddkv(){
+    closeAddkv() {
       this.isOpenAddkvDialog = false
     },
     cancelAddEnvDialog() {
@@ -379,7 +409,7 @@ export default {
     //**********************************//
 
     //**********************************//
-    clearDialogKeyValclear(){
+    clearDialogKeyValclear() {
       this.addMoreEnvKey = []
       this.addMoreEnvVal = []
     },
@@ -413,19 +443,20 @@ export default {
     },
 
     //**********************************//
-    AddEnvKv(kv) {
-      console.log(kv.id)
-      this.$axios.patch(`http://localhost:80/api/env/keyval/${kv._id}`,
+    AddEnvKv() {
+      console.log('sel-e->', this.selectedEnvId)
+      console.log(this.addMoreEnvKey, this.addMoreEnvVal)
+      this.$axios.patch(`http://localhost:80/api/env/keyval/${this.selectedEnvId}`,
         {
           key: this.addMoreEnvKey,
           value: this.addMoreEnvVal
         })
         .then((data) => {
           this.dataItem = data
-          this.isOpenAddkvDialog = false,
+          this.isOpenAddkvDialog = false
           this.clearDialogKeyValclear()
           console.log('this is (success) ', data)
-          console.log(kv)
+          // console.log(kv)
         }).finally(() => {
         this.fetch()
       })
