@@ -20,11 +20,10 @@
         </v-col>
         <v-col cols="6" class="d-flex justify-end">
           <v-btn class="mb-2 " small color="warning" @click="editAllItem" v-if="!cancleEditing">
-            <v-icon>mdi-pencil</v-icon>
-          </v-btn>
+              <v-icon>mdi-pencil</v-icon>
+            </v-btn>
         </v-col>
       </v-row>
-
       <v-card>
         <v-container>
           <div>
@@ -86,17 +85,14 @@
         </v-container>
       </v-card>
       <h2 class="mt-3">Environment</h2>
+      <v-btn class="mb-2 " small color="warning" @click="notShowDetail" v-if="isShowDetail">Not Show detail</v-btn>
+      <v-btn v-if="!isShowDetail" color="primary" small @click="showDetail">Show Detail</v-btn>
       <v-card v-for="env in dataItem.env" class="mt-2">
         <v-container>
           <div>
             <strong>
               Env Name : {{ env.name }}
             </strong>
-            <v-btn color="error" small class="ma-1" @click="openDeleteWholeEnv">
-              <v-icon>
-                mdi-delete
-              </v-icon>
-            </v-btn>
             <v-dialog
               v-for="wholeEnv in dataItem.env"
               max-width="290"
@@ -159,72 +155,74 @@
               </v-dialog>
             </div>
           </div>
-          <v-divider class="mb-2"></v-divider>
+<!--          <div class="d-flex justify-start align-center " v-if="isShowDetail">-->
 
-          <div class="d-flex justify-start align-center">
-            <v-row>
-              <v-col cols="6">
-                <strong>
-                  Key / Value
-                </strong>
+          <div v-if="isShowDetail">
+            <div class="d-flex justify-start align-center ">
+              <v-row>
+                <v-col cols="6">
+                  <strong>
+                    Key / Value
+                  </strong>
+                </v-col>
+              </v-row>
+              <v-col cols="6" class="d-flex justify-end">
+                <v-btn @click="openAddKvDialog(env._id)" small color="primary ">เพิ่ม Key/Value</v-btn>
               </v-col>
-            </v-row>
-            <v-col cols="6" class="d-flex justify-end">
-              <v-btn @click="openAddKvDialog(env._id)" small color="primary ">เพิ่ม Key/Value</v-btn>
-            </v-col>
 
-          </div>
-          <div v-for="kv in env.itemEnv" class="d-flex mt-2">
-            <div style="flex: 1 1;">
-              <span v-if="!isEditing">Key : <strong>{{ kv.key }}</strong></span>
-              <v-text-field
-                v-if="isEditing"
-                v-model="kv.key"
-                outlined
-                label="key"
-              ></v-text-field>
             </div>
-            <div style="flex: 2 1;" class="mx-2">
-              <span v-if="!isEditing">Value : <strong>{{ kv.value }}</strong></span>
-              <v-text-field
-                v-if="isEditing"
-                v-model="kv.value"
-                outlined
-                label="val"
-              ></v-text-field>
-            </div>
-            <div class="d-flex">
-              <v-btn class="mb-3" small color="error" @click="openDeleteKvdialog">
-                <v-icon>
-                  mdi-delete
-                </v-icon>
-              </v-btn>
-              <v-dialog
-                max-width="390"
-                v-model="isOpenDeleteKvdialog"
-                v-for="envElement in dataItem.env"
-              >
-                <v-card>
-                  <v-container>
-                    <p>ยืนยันที่จะลบ Key และ Value ของ <strong>{{ envElement.name }}</strong></p>
+            <div v-for="kv in env.itemEnv" class="d-flex mt-2">
+              <div style="flex: 1 1;">
+                <span v-if="!isEditing">Key : <strong>{{ kv.key }}</strong></span>
+                <v-text-field
+                  v-if="isEditing"
+                  v-model="kv.key"
+                  outlined
+                  label="key"
+                ></v-text-field>
+              </div>
+              <div style="flex: 2 1;" class="mx-2">
+                <span v-if="!isEditing">Value : <strong>{{ kv.value }}</strong></span>
+                <v-text-field
+                  v-if="isEditing"
+                  v-model="kv.value"
+                  outlined
+                  label="val"
+                ></v-text-field>
+              </div>
+              <div class="d-flex">
+                <v-btn class="mb-3" small color="error" @click="openDeleteKvdialog">
+                  <v-icon>
+                    mdi-delete
+                  </v-icon>
+                </v-btn>
+                <v-dialog
+                  max-width="390"
+                  v-model="isOpenDeleteKvdialog"
+                  v-for="envElement in dataItem.env"
+                >
+                  <v-card>
+                    <v-container>
+                      <p>ยืนยันที่จะลบ Key และ Value ของ <strong>{{ envElement.name }}</strong></p>
 
-                    <v-btn
-                      @click="deleteEnvKv(env, kv)"
-                      color="success">
-                      ยืนยัน
-                    </v-btn>
-                    <v-btn
-                      color="error"
-                      @click="closeDeleteKvdialog"
-                    >
-                      ยกเลิก
-                    </v-btn>
-                  </v-container>
-                </v-card>
-              </v-dialog>
+                      <v-btn
+                        @click="deleteEnvKv(env, kv)"
+                        color="success">
+                        ยืนยัน
+                      </v-btn>
+                      <v-btn
+                        color="error"
+                        @click="closeDeleteKvdialog"
+                      >
+                        ยกเลิก
+                      </v-btn>
+                    </v-container>
+                  </v-card>
+                </v-dialog>
+              </div>
             </div>
           </div>
-          <v-spacer></v-spacer>
+
         </v-container>
       </v-card>
       <div align="center">
@@ -289,40 +287,6 @@
         </v-dialog>
       </div>
     </v-container>
-    <template>
-
-      <template>
-        <v-container>
-          <v-expansion-panels>
-            <v-expansion-panel
-              v-for="(item,i) in 5"
-              :key="i"
-            >
-              <v-expansion-panel-header>
-               {{item}} Item
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-            <v-expansion-panel
-              v-for="x in dataItem.env"
-            >
-              <v-expansion-panel-header>
-                {{x.name}}
-              </v-expansion-panel-header>
-              <v-expansion-panel-content v-for="keyval in x.itemEnv">
-                {{keyval}}
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-expansion-panels>
-        </v-container>
-
-      </template>
-
-
-    </template>
-
 
   </v-card>
 
@@ -342,6 +306,7 @@ export default {
       tab: null,
       data: null,
       dataItem: null,
+      isShowDetail: false,
       isEditing: false,
       cancleEditing: false,
       //not cancle
@@ -370,6 +335,12 @@ export default {
   },
 
   methods: {
+    notShowDetail(){
+      this.isShowDetail = false
+    },
+    showDetail() {
+      this.isShowDetail = true
+    },
     //**********************************//
     //Dialog Env  ทั้งหมด
     closeDeleteWholeEnv() {
